@@ -27,12 +27,12 @@ export default class Avatar extends React.PureComponent {
   handleMouseEnter = () => {
     if (this.props.animate) return;
     this.setState({ hovering: true });
-  }
+  };
 
   handleMouseLeave = () => {
     if (this.props.animate) return;
     this.setState({ hovering: false });
-  }
+  };
 
   render () {
     const { account, size, animate, inline } = this.props;
@@ -42,28 +42,20 @@ export default class Avatar extends React.PureComponent {
       ...this.props.style,
       width: `${size}px`,
       height: `${size}px`,
-      backgroundSize: `${size}px ${size}px`,
     };
 
-    if (account) {
-      const src = account.get('avatar');
-      const staticSrc = account.get('avatar_static');
+    let src;
 
-      if (hovering || animate) {
-        style.backgroundImage = `url(${src})`;
-      } else {
-        style.backgroundImage = `url(${staticSrc})`;
-      }
+    if (hovering || animate) {
+      src = account?.get('avatar');
+    } else {
+      src = account?.get('avatar_static');
     }
 
-
     return (
-      <div
-        className={classNames('account__avatar', { 'account__avatar-inline': inline })}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        style={style}
-      />
+      <div className={classNames('account__avatar', { 'account__avatar-inline': inline })} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} style={style}>
+        {src && <img src={src} alt={account?.get('acct')} />}
+      </div>
     );
   }
 

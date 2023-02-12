@@ -7,6 +7,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { createSelector } from 'reselect';
 import { fetchStatus } from '../../actions/statuses';
 import MissingIndicator from '../../components/missing_indicator';
+import LoadingIndicator from 'mastodon/components/loading_indicator';
 import DetailedStatus from './components/detailed_status';
 import ActionBar from './components/action_bar';
 import Column from '../ui/components/column';
@@ -32,6 +33,8 @@ import {
   editStatus,
   hideStatus,
   revealStatus,
+  translateStatus,
+  undoStatusTranslation,
 } from '../../actions/statuses';
 import {
   unblockAccount,
@@ -58,6 +61,7 @@ import { boostModal, deleteModal } from '../../initial_state';
 import { attachFullscreenListener, detachFullscreenListener, isFullscreen } from '../ui/util/fullscreen';
 import { textForScreenReader, defaultMediaVisibility } from '../../components/status';
 import Icon from 'mastodon/components/icon';
+import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
   deleteConfirm: { id: 'confirmations.delete.confirm', defaultMessage: 'Delete' },
@@ -142,6 +146,7 @@ const makeMapStateToProps = () => {
     }
 
     return {
+      isLoading: state.getIn(['statuses', props.params.statusId, 'isLoading']),
       status,
       ancestorsIds,
       descendantsIds,
@@ -154,18 +159,37 @@ const makeMapStateToProps = () => {
   return mapStateToProps;
 };
 
+const truncate = (str, num) => {
+  if (str.length > num) {
+    return str.slice(0, num) + '…';
+  } else {
+    return str;
+  }
+};
+
+const titleFromStatus = status => {
+  const displayName = status.getIn(['account', 'display_name']);
+  const username = status.getIn(['account', 'username']);
+  const prefix = displayName.trim().length === 0 ? username : displayName;
+  const text = status.get('search_index');
+
+  return `${prefix}: "${truncate(text, 30)}"`;
+};
+
 export default @injectIntl
 @connect(makeMapStateToProps)
 class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
+    identity: PropTypes.object,
   };
 
   static propTypes = {
     params: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     status: ImmutablePropTypes.map,
+    isLoading: PropTypes.bool,
     ancestorsIds: ImmutablePropTypes.list,
     descendantsIds: ImmutablePropTypes.list,
     intl: PropTypes.object.isRequired,
@@ -198,6 +222,10 @@ class Status extends ImmutablePureComponent {
       this.props.dispatch(fetchStatus(nextProps.params.statusId));
     }
 
+    if (nextProps.params.statusId && nextProps.ancestorsIds.size > this.props.ancestorsIds.size) {
+      this._scrolledIntoView = false;
+    }
+
     if (nextProps.status && nextProps.status.get('id') !== this.state.loadedStatusId) {
       this.setState({ showMedia: defaultMediaVisibility(nextProps.status), loadedStatusId: nextProps.status.get('id') });
     }
@@ -205,15 +233,26 @@ class Status extends ImmutablePureComponent {
 
   handleToggleMediaVisibility = () => {
     this.setState({ showMedia: !this.state.showMedia });
-  }
+  };
 
   handleFavouriteClick = (status) => {
-    if (status.get('favourited')) {
-      this.props.dispatch(unfavourite(status));
+    const { dispatch } = this.props;
+    const { signedIn } = this.context.identity;
+
+    if (signedIn) {
+      if (status.get('favourited')) {
+        dispatch(unfavourite(status));
+      } else {
+        dispatch(favourite(status));
+      }
     } else {
-      this.props.dispatch(favourite(status));
+      dispatch(openModal('INTERACTION', {
+        type: 'favourite',
+        accountId: status.getIn(['account', 'id']),
+        url: status.get('url'),
+      }));
     }
-  }
+  };
 
   handlePin = (status) => {
     if (status.get('pinned')) {
@@ -221,36 +260,57 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(pin(status));
     }
-  }
+  };
 
   handleReplyClick = (status) => {
-    let { askReplyConfirmation, dispatch, intl } = this.props;
-    if (askReplyConfirmation) {
-      dispatch(openModal('CONFIRM', {
-        message: intl.formatMessage(messages.replyMessage),
-        confirm: intl.formatMessage(messages.replyConfirm),
-        onConfirm: () => dispatch(replyCompose(status, this.context.router.history)),
-      }));
+    const { askReplyConfirmation, dispatch, intl } = this.props;
+    const { signedIn } = this.context.identity;
+
+    if (signedIn) {
+      if (askReplyConfirmation) {
+        dispatch(openModal('CONFIRM', {
+          message: intl.formatMessage(messages.replyMessage),
+          confirm: intl.formatMessage(messages.replyConfirm),
+          onConfirm: () => dispatch(replyCompose(status, this.context.router.history)),
+        }));
+      } else {
+        dispatch(replyCompose(status, this.context.router.history));
+      }
     } else {
-      dispatch(replyCompose(status, this.context.router.history));
+      dispatch(openModal('INTERACTION', {
+        type: 'reply',
+        accountId: status.getIn(['account', 'id']),
+        url: status.get('url'),
+      }));
     }
-  }
+  };
 
   handleModalReblog = (status, privacy) => {
     this.props.dispatch(reblog(status, privacy));
-  }
+  };
 
   handleReblogClick = (status, e) => {
-    if (status.get('reblogged')) {
-      this.props.dispatch(unreblog(status));
-    } else {
-      if ((e && e.shiftKey) || !boostModal) {
-        this.handleModalReblog(status);
+    const { dispatch } = this.props;
+    const { signedIn } = this.context.identity;
+
+    if (signedIn) {
+      if (status.get('reblogged')) {
+        dispatch(unreblog(status));
       } else {
-        this.props.dispatch(initBoostModal({ status, onReblog: this.handleModalReblog }));
+        if ((e && e.shiftKey) || !boostModal) {
+          this.handleModalReblog(status);
+        } else {
+          dispatch(initBoostModal({ status, onReblog: this.handleModalReblog }));
+        }
       }
+    } else {
+      dispatch(openModal('INTERACTION', {
+        type: 'reblog',
+        accountId: status.getIn(['account', 'id']),
+        url: status.get('url'),
+      }));
     }
-  }
+  };
 
   handleBookmarkClick = (status) => {
     if (status.get('bookmarked')) {
@@ -258,7 +318,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(bookmark(status));
     }
-  }
+  };
 
   handleDeleteClick = (status, history, withRedraft = false) => {
     const { dispatch, intl } = this.props;
@@ -272,27 +332,27 @@ class Status extends ImmutablePureComponent {
         onConfirm: () => dispatch(deleteStatus(status.get('id'), history, withRedraft)),
       }));
     }
-  }
+  };
 
   handleEditClick = (status, history) => {
     this.props.dispatch(editStatus(status.get('id'), history));
-  }
+  };
 
   handleDirectClick = (account, router) => {
     this.props.dispatch(directCompose(account, router));
-  }
+  };
 
   handleMentionClick = (account, router) => {
     this.props.dispatch(mentionCompose(account, router));
-  }
+  };
 
   handleOpenMedia = (media, index) => {
     this.props.dispatch(openModal('MEDIA', { statusId: this.props.status.get('id'), media, index }));
-  }
+  };
 
   handleOpenVideo = (media, options) => {
     this.props.dispatch(openModal('VIDEO', { statusId: this.props.status.get('id'), media, options }));
-  }
+  };
 
   handleHotkeyOpenMedia = e => {
     const { status } = this.props;
@@ -306,11 +366,11 @@ class Status extends ImmutablePureComponent {
         this.handleOpenMedia(status.get('media_attachments'), 0);
       }
     }
-  }
+  };
 
   handleMuteClick = (account) => {
     this.props.dispatch(initMuteModal(account));
-  }
+  };
 
   handleConversationMuteClick = (status) => {
     if (status.get('muted')) {
@@ -318,7 +378,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(muteStatus(status.get('id')));
     }
-  }
+  };
 
   handleToggleHidden = (status) => {
     if (status.get('hidden')) {
@@ -326,7 +386,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideStatus(status.get('id')));
     }
-  }
+  };
 
   handleToggleAll = () => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -337,29 +397,39 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideStatus(statusIds));
     }
-  }
+  };
+
+  handleTranslate = status => {
+    const { dispatch } = this.props;
+
+    if (status.get('translation')) {
+      dispatch(undoStatusTranslation(status.get('id')));
+    } else {
+      dispatch(translateStatus(status.get('id')));
+    }
+  };
 
   handleBlockClick = (status) => {
     const { dispatch } = this.props;
     const account = status.get('account');
     dispatch(initBlockModal(account));
-  }
+  };
 
   handleReport = (status) => {
     this.props.dispatch(initReport(status.get('account'), status));
-  }
+  };
 
   handleEmbed = (status) => {
     this.props.dispatch(openModal('EMBED', { url: status.get('url') }));
-  }
+  };
 
   handleUnmuteClick = account => {
     this.props.dispatch(unmuteAccount(account.get('id')));
-  }
+  };
 
   handleUnblockClick = account => {
     this.props.dispatch(unblockAccount(account.get('id')));
-  }
+  };
 
   handleBlockDomainClick = domain => {
     this.props.dispatch(openModal('CONFIRM', {
@@ -367,50 +437,50 @@ class Status extends ImmutablePureComponent {
       confirm: this.props.intl.formatMessage(messages.blockDomainConfirm),
       onConfirm: () => this.props.dispatch(blockDomain(domain)),
     }));
-  }
+  };
 
   handleUnblockDomainClick = domain => {
     this.props.dispatch(unblockDomain(domain));
-  }
+  };
 
 
   handleHotkeyMoveUp = () => {
     this.handleMoveUp(this.props.status.get('id'));
-  }
+  };
 
   handleHotkeyMoveDown = () => {
     this.handleMoveDown(this.props.status.get('id'));
-  }
+  };
 
   handleHotkeyReply = e => {
     e.preventDefault();
     this.handleReplyClick(this.props.status);
-  }
+  };
 
   handleHotkeyFavourite = () => {
     this.handleFavouriteClick(this.props.status);
-  }
+  };
 
   handleHotkeyBoost = () => {
     this.handleReblogClick(this.props.status);
-  }
+  };
 
   handleHotkeyMention = e => {
     e.preventDefault();
     this.handleMentionClick(this.props.status.get('account'));
-  }
+  };
 
   handleHotkeyOpenProfile = () => {
     this.context.router.history.push(`/@${this.props.status.getIn(['account', 'acct'])}`);
-  }
+  };
 
   handleHotkeyToggleHidden = () => {
     this.handleToggleHidden(this.props.status);
-  }
+  };
 
   handleHotkeyToggleSensitive = () => {
     this.handleToggleMediaVisibility();
-  }
+  };
 
   handleMoveUp = id => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -427,7 +497,7 @@ class Status extends ImmutablePureComponent {
         this._selectChild(index - 1, true);
       }
     }
-  }
+  };
 
   handleMoveDown = id => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -444,7 +514,7 @@ class Status extends ImmutablePureComponent {
         this._selectChild(index + 1, false);
       }
     }
-  }
+  };
 
   _selectChild (index, align_top) {
     const container = this.node;
@@ -474,7 +544,7 @@ class Status extends ImmutablePureComponent {
 
   setRef = c => {
     this.node = c;
-  }
+  };
 
   componentDidUpdate () {
     if (this._scrolledIntoView) {
@@ -499,12 +569,20 @@ class Status extends ImmutablePureComponent {
 
   onFullScreenChange = () => {
     this.setState({ fullscreen: isFullscreen() });
-  }
+  };
 
   render () {
     let ancestors, descendants;
-    const { status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
+    const { isLoading, status, ancestorsIds, descendantsIds, intl, domain, multiColumn, pictureInPicture } = this.props;
     const { fullscreen } = this.state;
+
+    if (isLoading) {
+      return (
+        <Column>
+          <LoadingIndicator />
+        </Column>
+      );
+    }
 
     if (status === null) {
       return (
@@ -522,6 +600,9 @@ class Status extends ImmutablePureComponent {
     if (descendantsIds && descendantsIds.size > 0) {
       descendants = <div>{this.renderChildren(descendantsIds)}</div>;
     }
+
+    const isLocal = status.getIn(['account', 'acct'], '').indexOf('@') === -1;
+    const isIndexable = !status.getIn(['account', 'noindex']);
 
     const handlers = {
       moveUp: this.handleHotkeyMoveUp,
@@ -542,7 +623,7 @@ class Status extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' title={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll} aria-pressed={status.get('hidden') ? 'false' : 'true'}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
+            <button type='button' className='column-header__button' title={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} aria-label={intl.formatMessage(status.get('hidden') ? messages.revealAll : messages.hideAll)} onClick={this.handleToggleAll}><Icon id={status.get('hidden') ? 'eye-slash' : 'eye'} /></button>
           )}
         />
 
@@ -558,6 +639,7 @@ class Status extends ImmutablePureComponent {
                   onOpenVideo={this.handleOpenVideo}
                   onOpenMedia={this.handleOpenMedia}
                   onToggleHidden={this.handleToggleHidden}
+                  onTranslate={this.handleTranslate}
                   domain={domain}
                   showMedia={this.state.showMedia}
                   onToggleMediaVisibility={this.handleToggleMediaVisibility}
@@ -592,6 +674,11 @@ class Status extends ImmutablePureComponent {
             {descendants}
           </div>
         </ScrollContainer>
+
+        <Helmet>
+          <title>{titleFromStatus(status)}</title>
+          <meta name='robots' content={(isLocal && isIndexable) ? 'all' : 'noindex'} />
+        </Helmet>
       </Column>
     );
   }

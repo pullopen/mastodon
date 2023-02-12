@@ -8,6 +8,7 @@ import ColumnBackButtonSlim from '../../components/column_back_button_slim';
 import StatusList from '../../components/status_list';
 import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
   heading: { id: 'column.pins', defaultMessage: 'Pinned post' },
@@ -36,11 +37,11 @@ class PinnedStatuses extends ImmutablePureComponent {
 
   handleHeaderClick = () => {
     this.column.scrollTop();
-  }
+  };
 
   setRef = c => {
     this.column = c;
-  }
+  };
 
   render () {
     const { intl, statusIds, hasMore, multiColumn } = this.props;
@@ -54,6 +55,9 @@ class PinnedStatuses extends ImmutablePureComponent {
           hasMore={hasMore}
           bindToDocument={!multiColumn}
         />
+        <Helmet>
+          <meta name='robots' content='noindex' />
+        </Helmet>
       </Column>
     );
   }

@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { changeListEditorTitle, submitListEditor } from '../../../actions/lists';
-import IconButton from '../../../components/icon_button';
+import { changeListEditorTitle, submitListEditor } from 'mastodon/actions/lists';
+import Button from 'mastodon/components/button';
 import { defineMessages, injectIntl } from 'react-intl';
 
 const messages = defineMessages({
@@ -34,16 +34,16 @@ class NewListForm extends React.PureComponent {
 
   handleChange = e => {
     this.props.onChange(e.target.value);
-  }
+  };
 
   handleSubmit = e => {
     e.preventDefault();
     this.props.onSubmit();
-  }
+  };
 
   handleClick = () => {
     this.props.onSubmit();
-  }
+  };
 
   render () {
     const { value, disabled, intl } = this.props;
@@ -65,10 +65,9 @@ class NewListForm extends React.PureComponent {
           />
         </label>
 
-        <IconButton
+        <Button
           disabled={disabled || !value}
-          icon='plus'
-          title={title}
+          text={title}
           onClick={this.handleClick}
         />
       </form>

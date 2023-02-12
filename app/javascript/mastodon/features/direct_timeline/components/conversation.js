@@ -7,7 +7,7 @@ import AttachmentList from 'mastodon/components/attachment_list';
 import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 import DropdownMenuContainer from 'mastodon/containers/dropdown_menu_container';
 import AvatarComposite from 'mastodon/components/avatar_composite';
-import Permalink from 'mastodon/components/permalink';
+import { Link } from 'react-router-dom';
 import IconButton from 'mastodon/components/icon_button';
 import RelativeTimestamp from 'mastodon/components/relative_timestamp';
 import { HotKeys } from 'react-hotkeys';
@@ -55,7 +55,7 @@ class Conversation extends ImmutablePureComponent {
       let emoji = emojis[i];
       emoji.src = emoji.getAttribute('data-original');
     }
-  }
+  };
 
   handleMouseLeave = ({ currentTarget }) => {
     if (autoPlayGif) {
@@ -68,7 +68,7 @@ class Conversation extends ImmutablePureComponent {
       let emoji = emojis[i];
       emoji.src = emoji.getAttribute('data-static');
     }
-  }
+  };
 
   handleClick = () => {
     if (!this.context.router) {
@@ -82,35 +82,35 @@ class Conversation extends ImmutablePureComponent {
     }
 
     this.context.router.history.push(`/@${lastStatus.getIn(['account', 'acct'])}/${lastStatus.get('id')}`);
-  }
+  };
 
   handleMarkAsRead = () => {
     this.props.markRead();
-  }
+  };
 
   handleReply = () => {
     this.props.reply(this.props.lastStatus, this.context.router.history);
-  }
+  };
 
   handleDelete = () => {
     this.props.delete();
-  }
+  };
 
   handleHotkeyMoveUp = () => {
     this.props.onMoveUp(this.props.conversationId);
-  }
+  };
 
   handleHotkeyMoveDown = () => {
     this.props.onMoveDown(this.props.conversationId);
-  }
+  };
 
   handleConversationMute = () => {
     this.props.onMute(this.props.lastStatus);
-  }
+  };
 
   handleShowMore = () => {
     this.props.onToggleHidden(this.props.lastStatus);
-  }
+  };
 
   render () {
     const { accounts, lastStatus, unread, scrollKey, intl } = this.props;
@@ -133,7 +133,7 @@ class Conversation extends ImmutablePureComponent {
 
     menu.push({ text: intl.formatMessage(messages.delete), action: this.handleDelete });
 
-    const names = accounts.map(a => <Permalink to={`/@${a.get('acct')}`} href={a.get('url')} key={a.get('id')} title={a.get('acct')}><bdi><strong className='display-name__html' dangerouslySetInnerHTML={{ __html: a.get('display_name_html') }} /></bdi></Permalink>).reduce((prev, cur) => [prev, ', ', cur]);
+    const names = accounts.map(a => <Link to={`/@${a.get('acct')}`} key={a.get('id')} title={a.get('acct')}><bdi><strong className='display-name__html' dangerouslySetInnerHTML={{ __html: a.get('display_name_html') }} /></bdi></Link>).reduce((prev, cur) => [prev, ', ', cur]);
 
     const handlers = {
       reply: this.handleReply,

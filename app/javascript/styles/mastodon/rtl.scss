@@ -53,16 +53,6 @@ body.rtl {
     right: -26px;
   }
 
-  .landing-page__logo {
-    margin-right: 0;
-    margin-left: 20px;
-  }
-
-  .landing-page .features-list .features-list__row .visual {
-    margin-left: 0;
-    margin-right: 15px;
-  }
-
   .column-link__icon,
   .column-header__icon {
     margin-right: 0;
@@ -142,43 +132,6 @@ body.rtl {
     margin-right: 8px;
   }
 
-  .status__avatar {
-    left: auto;
-    right: 10px;
-  }
-
-  .status,
-  .activity-stream .status.light {
-    padding-left: 10px;
-    padding-right: 68px;
-  }
-
-  .status__info .status__display-name,
-  .activity-stream .status.light .status__display-name {
-    padding-left: 25px;
-    padding-right: 0;
-  }
-
-  .activity-stream .pre-header {
-    padding-right: 68px;
-    padding-left: 0;
-  }
-
-  .status__prepend {
-    margin-left: 0;
-    margin-right: 68px;
-  }
-
-  .status__prepend-icon-wrapper {
-    left: auto;
-    right: -26px;
-  }
-
-  .activity-stream .pre-header .pre-header__icon {
-    left: auto;
-    right: 42px;
-  }
-
   .account__header__tabs__buttons > .icon-button {
     margin-right: 0;
     margin-left: 8px;
@@ -194,12 +147,6 @@ body.rtl {
     left: 0;
   }
 
-  .status__relative-time,
-  .status__visibility-icon,
-  .activity-stream .status.light .status__header .status__meta {
-    float: left;
-  }
-
   .status__action-bar {
     &__counter {
       margin-right: 0;
@@ -210,16 +157,6 @@ body.rtl {
         margin-left: 4px;
       }
     }
-  }
-
-  .status__action-bar-button {
-    float: right;
-    margin-right: 0;
-    margin-left: 18px;
-  }
-
-  .status__action-bar-dropdown {
-    float: right;
   }
 
   .privacy-dropdown__dropdown {
@@ -240,7 +177,6 @@ body.rtl {
   .detailed-status__display-avatar {
     margin-right: 0;
     margin-left: 10px;
-    float: right;
   }
 
   .picture-in-picture__header__account .account__avatar {
@@ -350,44 +286,6 @@ body.rtl {
     margin-left: 45px;
   }
 
-  .landing-page .header-wrapper .mascot {
-    right: 60px;
-    left: auto;
-  }
-
-  .landing-page__call-to-action .row__information-board {
-    direction: rtl;
-  }
-
-  .landing-page .header .hero .floats .float-1 {
-    left: -120px;
-    right: auto;
-  }
-
-  .landing-page .header .hero .floats .float-2 {
-    left: 210px;
-    right: auto;
-  }
-
-  .landing-page .header .hero .floats .float-3 {
-    left: 110px;
-    right: auto;
-  }
-
-  .landing-page .header .links .brand img {
-    left: 0;
-  }
-
-  .landing-page .fa-external-link {
-    padding-right: 5px;
-    padding-left: 0 !important;
-  }
-
-  .landing-page .features #mastodon-timeline {
-    margin-right: 0;
-    margin-left: 30px;
-  }
-
   @media screen and (min-width: 631px) {
     .column,
     .drawer {
@@ -413,32 +311,6 @@ body.rtl {
   .columns-area--mobile .drawer {
     padding-left: 0;
     padding-right: 0;
-  }
-
-  .public-layout {
-    .header {
-      .nav-button {
-        margin-left: 8px;
-        margin-right: 0;
-      }
-    }
-
-    .public-account-header__tabs {
-      margin-left: 0;
-      margin-right: 20px;
-    }
-  }
-
-  .landing-page__information {
-    .account__display-name {
-      margin-right: 0;
-      margin-left: 5px;
-    }
-
-    .account__avatar-wrapper {
-      margin-left: 12px;
-      margin-right: 0;
-    }
   }
 
   .card__bar .display-name {

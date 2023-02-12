@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
-
+import StackTrace from 'stacktrace-js';
 import ColumnLoading from '../components/column_loading';
 import BundleColumnError from '../components/bundle_column_error';
 import BundleContainer from '../containers/bundle_container';
@@ -42,23 +42,55 @@ export class WrappedRoute extends React.Component {
     componentParams: {},
   };
 
+  static getDerivedStateFromError () {
+    return {
+      hasError: true,
+    };
+  }
+
+  state = {
+    hasError: false,
+    stacktrace: '',
+  };
+
+  componentDidCatch (error) {
+    StackTrace.fromError(error).then(stackframes => {
+      this.setState({ stacktrace: error.toString() + '\n' + stackframes.map(frame => frame.toString()).join('\n') });
+    }).catch(err => {
+      console.error(err);
+    });
+  }
+
   renderComponent = ({ match }) => {
     const { component, content, multiColumn, componentParams } = this.props;
+    const { hasError, stacktrace } = this.state;
+
+    if (hasError) {
+      return (
+        <BundleColumnError
+          stacktrace={stacktrace}
+          multiColumn={multiColumn}
+          errorType='error'
+        />
+      );
+    }
 
     return (
       <BundleContainer fetchComponent={component} loading={this.renderLoading} error={this.renderError}>
         {Component => <Component params={match.params} multiColumn={multiColumn} {...componentParams}>{content}</Component>}
       </BundleContainer>
     );
-  }
+  };
 
   renderLoading = () => {
-    return <ColumnLoading />;
-  }
+    const { multiColumn } = this.props;
+
+    return <ColumnLoading multiColumn={multiColumn} />;
+  };
 
   renderError = (props) => {
-    return <BundleColumnError {...props} />;
-  }
+    return <BundleColumnError {...props} errorType='network' />;
+  };
 
   render () {
     const { component: Component, content, ...rest } = this.props;

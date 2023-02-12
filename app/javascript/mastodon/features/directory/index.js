@@ -13,6 +13,7 @@ import RadioButton from 'mastodon/components/radio_button';
 import LoadMore from 'mastodon/components/load_more';
 import ScrollContainer from 'mastodon/containers/scroll_container';
 import LoadingIndicator from 'mastodon/components/loading_indicator';
+import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
   title: { id: 'column.directory', defaultMessage: 'Browse profiles' },
@@ -63,7 +64,7 @@ class Directory extends React.PureComponent {
     } else {
       dispatch(addColumn('DIRECTORY', this.getParams(this.props, this.state)));
     }
-  }
+  };
 
   getParams = (props, state) => ({
     order: state.order === null ? (props.params.order || 'active') : state.order,
@@ -73,11 +74,11 @@ class Directory extends React.PureComponent {
   handleMove = dir => {
     const { columnId, dispatch } = this.props;
     dispatch(moveColumn(columnId, dir));
-  }
+  };
 
   handleHeaderClick = () => {
     this.column.scrollTop();
-  }
+  };
 
   componentDidMount () {
     const { dispatch } = this.props;
@@ -96,7 +97,7 @@ class Directory extends React.PureComponent {
 
   setRef = c => {
     this.column = c;
-  }
+  };
 
   handleChangeOrder = e => {
     const { dispatch, columnId } = this.props;
@@ -106,7 +107,7 @@ class Directory extends React.PureComponent {
     } else {
       this.setState({ order: e.target.value });
     }
-  }
+  };
 
   handleChangeLocal = e => {
     const { dispatch, columnId } = this.props;
@@ -116,12 +117,12 @@ class Directory extends React.PureComponent {
     } else {
       this.setState({ local: e.target.value === '1' });
     }
-  }
+  };
 
   handleLoadMore = () => {
     const { dispatch } = this.props;
     dispatch(expandDirectory(this.getParams(this.props, this.state)));
-  }
+  };
 
   render () {
     const { isLoading, accountIds, intl, columnId, multiColumn, domain } = this.props;
@@ -165,6 +166,11 @@ class Directory extends React.PureComponent {
         />
 
         {multiColumn && !pinned ? <ScrollContainer scrollKey='directory'>{scrollableArea}</ScrollContainer> : scrollableArea}
+
+        <Helmet>
+          <title>{intl.formatMessage(messages.title)}</title>
+          <meta name='robots' content='noindex' />
+        </Helmet>
       </Column>
     );
   }

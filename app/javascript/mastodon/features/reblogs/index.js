@@ -11,6 +11,7 @@ import Column from '../ui/components/column';
 import ScrollableList from '../../components/scrollable_list';
 import Icon from 'mastodon/components/icon';
 import ColumnHeader from '../../components/column_header';
+import { Helmet } from 'react-helmet';
 
 const messages = defineMessages({
   refresh: { id: 'refresh', defaultMessage: 'Refresh' },
@@ -46,7 +47,7 @@ class Reblogs extends ImmutablePureComponent {
 
   handleRefresh = () => {
     this.props.dispatch(fetchReblogs(this.props.params.statusId));
-  }
+  };
 
   render () {
     const { intl, accountIds, multiColumn } = this.props;
@@ -67,7 +68,7 @@ class Reblogs extends ImmutablePureComponent {
           showBackButton
           multiColumn={multiColumn}
           extraButton={(
-            <button className='column-header__button' title={intl.formatMessage(messages.refresh)} aria-label={intl.formatMessage(messages.refresh)} onClick={this.handleRefresh}><Icon id='refresh' /></button>
+            <button type='button' className='column-header__button' title={intl.formatMessage(messages.refresh)} aria-label={intl.formatMessage(messages.refresh)} onClick={this.handleRefresh}><Icon id='refresh' /></button>
           )}
         />
 
@@ -80,6 +81,10 @@ class Reblogs extends ImmutablePureComponent {
             <AccountContainer key={id} id={id} withNote={false} />,
           )}
         </ScrollableList>
+
+        <Helmet>
+          <meta name='robots' content='noindex' />
+        </Helmet>
       </Column>
     );
   }

@@ -12,6 +12,7 @@ const url = require('url');
 const uuid = require('uuid');
 const fs = require('fs');
 const WebSocket = require('ws');
+const { JSDOM } = require('jsdom');
 
 const env = process.env.NODE_ENV || 'development';
 const alwaysRequireAuth = process.env.LIMITED_FEDERATION_MODE === 'true' || process.env.WHITELIST_MODE === 'true' || process.env.AUTHORIZED_FETCH === 'true';
@@ -126,7 +127,6 @@ const startWorker = async (workerId) => {
       database: process.env.DB_NAME || 'mastodon_development',
       host:     process.env.DB_HOST || pg.defaults.host,
       port:     process.env.DB_PORT || pg.defaults.port,
-      max:      10,
     },
 
     production: {
@@ -135,20 +135,19 @@ const startWorker = async (workerId) => {
       database: process.env.DB_NAME || 'mastodon_production',
       host:     process.env.DB_HOST || 'localhost',
       port:     process.env.DB_PORT || 5432,
-      max:      10,
     },
   };
-
-  if (!!process.env.DB_SSLMODE && process.env.DB_SSLMODE !== 'disable') {
-    pgConfigs.development.ssl = true;
-    pgConfigs.production.ssl = true;
-  }
 
   const app = express();
 
   app.set('trust proxy', process.env.TRUSTED_PROXY_IP ? process.env.TRUSTED_PROXY_IP.split(/(?:\s*,\s*|\s+)/) : 'loopback,uniquelocal');
 
-  const pgPool = new pg.Pool(Object.assign(pgConfigs[env], dbUrlToConfig(process.env.DATABASE_URL)));
+  const pgPool = new pg.Pool(Object.assign(pgConfigs[env], dbUrlToConfig(process.env.DATABASE_URL), {
+    max: process.env.DB_POOL || 10,
+    connectionTimeoutMillis: 15000,
+    ssl: !!process.env.DB_SSLMODE && process.env.DB_SSLMODE !== 'disable',
+  }));
+
   const server = http.createServer(app);
   const redisNamespace = process.env.REDIS_NAMESPACE || null;
 
@@ -503,6 +502,9 @@ const startWorker = async (workerId) => {
       if (event === 'kill') {
         log.verbose(req.requestId, `Closing connection for ${req.accountId} due to expired access token`);
         eventHandlers.onKill();
+      } else if (event === 'filters_changed') {
+        log.verbose(req.requestId, `Invalidating filters cache for ${req.accountId}`);
+        req.cachedFilters = null;
       }
     };
   };
@@ -512,7 +514,8 @@ const startWorker = async (workerId) => {
    * @param {any} res
    */
   const subscribeHttpToSystemChannel = (req, res) => {
-    const systemChannelId = `timeline:access_token:${req.accessTokenId}`;
+    const accessTokenChannelId = `timeline:access_token:${req.accessTokenId}`;
+    const systemChannelId = `timeline:system:${req.accountId}`;
 
     const listener = createSystemMessageListener(req, {
 
@@ -523,9 +526,11 @@ const startWorker = async (workerId) => {
     });
 
     res.on('close', () => {
+      unsubscribe(`${redisPrefix}${accessTokenChannelId}`, listener);
       unsubscribe(`${redisPrefix}${systemChannelId}`, listener);
     });
 
+    subscribe(`${redisPrefix}${accessTokenChannelId}`, listener);
     subscribe(`${redisPrefix}${systemChannelId}`, listener);
   };
 
@@ -674,17 +679,84 @@ const startWorker = async (workerId) => {
           queries.push(client.query('SELECT 1 FROM account_domain_blocks WHERE account_id = $1 AND domain = $2', [req.accountId, accountDomain]));
         }
 
+        if (!unpackedPayload.filtered && !req.cachedFilters) {
+          queries.push(client.query('SELECT filter.id AS id, filter.phrase AS title, filter.context AS context, filter.expires_at AS expires_at, filter.action AS filter_action, keyword.keyword AS keyword, keyword.whole_word AS whole_word FROM custom_filter_keywords keyword JOIN custom_filters filter ON keyword.custom_filter_id = filter.id WHERE filter.account_id = $1 AND (filter.expires_at IS NULL OR filter.expires_at > NOW())', [req.accountId]));
+        }
+
         Promise.all(queries).then(values => {
           done();
 
-          if (values[0].rows.length > 0 || (values.length > 1 && values[1].rows.length > 0)) {
+          if (values[0].rows.length > 0 || (accountDomain && values[1].rows.length > 0)) {
             return;
+          }
+
+          if (!unpackedPayload.filtered && !req.cachedFilters) {
+            const filterRows = values[accountDomain ? 2 : 1].rows;
+
+            req.cachedFilters = filterRows.reduce((cache, row) => {
+              if (cache[row.id]) {
+                cache[row.id].keywords.push([row.keyword, row.whole_word]);
+              } else {
+                cache[row.id] = {
+                  keywords: [[row.keyword, row.whole_word]],
+                  expires_at: row.expires_at,
+                  repr: {
+                    id: row.id,
+                    title: row.title,
+                    context: row.context,
+                    expires_at: row.expires_at,
+                    filter_action: ['warn', 'hide'][row.filter_action],
+                  },
+                };
+              }
+
+              return cache;
+            }, {});
+
+            Object.keys(req.cachedFilters).forEach((key) => {
+              req.cachedFilters[key].regexp = new RegExp(req.cachedFilters[key].keywords.map(([keyword, whole_word]) => {
+                let expr = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+                if (whole_word) {
+                  if (/^[\w]/.test(expr)) {
+                    expr = `\\b${expr}`;
+                  }
+
+                  if (/[\w]$/.test(expr)) {
+                    expr = `${expr}\\b`;
+                  }
+                }
+
+                return expr;
+              }).join('|'), 'i');
+            });
+          }
+
+          // Check filters
+          if (req.cachedFilters && !unpackedPayload.filtered) {
+            const status = unpackedPayload;
+            const searchContent = ([status.spoiler_text || '', status.content].concat((status.poll && status.poll.options) ? status.poll.options.map(option => option.title) : [])).concat(status.media_attachments.map(att => att.description)).join('\n\n').replace(/<br\s*\/?>/g, '\n').replace(/<\/p><p>/g, '\n\n');
+            const searchIndex = JSDOM.fragment(searchContent).textContent;
+
+            const now = new Date();
+            payload.filtered = [];
+            Object.values(req.cachedFilters).forEach((cachedFilter) => {
+              if ((cachedFilter.expires_at === null || cachedFilter.expires_at > now)) {
+                const keyword_matches = searchIndex.match(cachedFilter.regexp);
+                if (keyword_matches) {
+                  payload.filtered.push({
+                    filter: cachedFilter.repr,
+                    keyword_matches,
+                  });
+                }
+              }
+            });
           }
 
           transmit();
         }).catch(err => {
-          done();
           log.error(err);
+          done();
         });
       });
     };
@@ -776,6 +848,27 @@ const startWorker = async (workerId) => {
     res.end('OK');
   });
 
+  app.get('/metrics', (req, res) => server.getConnections((err, count) => {
+    res.writeHeader(200, { 'Content-Type': 'application/openmetrics-text; version=1.0.0; charset=utf-8' });
+    res.write('# TYPE connected_clients gauge\n');
+    res.write('# HELP connected_clients The number of clients connected to the streaming server\n');
+    res.write(`connected_clients ${count}.0\n`);
+    res.write('# TYPE connected_channels gauge\n');
+    res.write('# HELP connected_channels The number of Redis channels the streaming server is subscribed to\n');
+    res.write(`connected_channels ${Object.keys(subs).length}.0\n`);
+    res.write('# TYPE pg.pool.total_connections gauge \n');
+    res.write('# HELP pg.pool.total_connections The total number of clients existing within the pool\n');
+    res.write(`pg.pool.total_connections ${pgPool.totalCount}.0\n`);
+    res.write('# TYPE pg.pool.idle_connections gauge \n');
+    res.write('# HELP pg.pool.idle_connections The number of clients which are not checked out but are currently idle in the pool\n');
+    res.write(`pg.pool.idle_connections ${pgPool.idleCount}.0\n`);
+    res.write('# TYPE pg.pool.waiting_queries gauge \n');
+    res.write('# HELP pg.pool.waiting_queries The number of queued requests waiting on a client when all clients are checked out\n');
+    res.write(`pg.pool.waiting_queries ${pgPool.waitingCount}.0\n`);
+    res.write('# EOF\n');
+    res.end();
+  }));
+
   app.use(authenticationMiddleware);
   app.use(errorMiddleware);
 
@@ -816,6 +909,34 @@ const startWorker = async (workerId) => {
     }
 
     return arr;
+  };
+
+  /**
+   * See app/lib/ascii_folder.rb for the canon definitions
+   * of these constants
+   */
+  const NON_ASCII_CHARS        = 'ÀÁÂÃÄÅàáâãäåĀāĂăĄąÇçĆćĈĉĊċČčÐðĎďĐđÈÉÊËèéêëĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħÌÍÎÏìíîïĨĩĪīĬĭĮįİıĴĵĶķĸĹĺĻļĽľĿŀŁłÑñŃńŅņŇňŉŊŋÒÓÔÕÖØòóôõöøŌōŎŏŐőŔŕŖŗŘřŚśŜŝŞşŠšſŢţŤťŦŧÙÚÛÜùúûüŨũŪūŬŭŮůŰűŲųŴŵÝýÿŶŷŸŹźŻżŽž';
+  const EQUIVALENT_ASCII_CHARS = 'AAAAAAaaaaaaAaAaAaCcCcCcCcCcDdDdDdEEEEeeeeEeEeEeEeEeGgGgGgGgHhHhIIIIiiiiIiIiIiIiIiJjKkkLlLlLlLlLlNnNnNnNnnNnOOOOOOooooooOoOoOoRrRrRrSsSsSsSssTtTtTtUUUUuuuuUuUuUuUuUuUuWwYyyYyYZzZzZz';
+
+  /**
+   * @param {string} str
+   * @return {string}
+   */
+  const foldToASCII = str => {
+    const regex = new RegExp(NON_ASCII_CHARS.split('').join('|'), 'g');
+
+    return str.replace(regex, match => {
+      const index = NON_ASCII_CHARS.indexOf(match);
+      return EQUIVALENT_ASCII_CHARS[index];
+    });
+  };
+
+  /**
+   * @param {string} str
+   * @return {string}
+   */
+  const normalizeHashtag = str => {
+    return foldToASCII(str.normalize('NFKC').toLowerCase()).replace(/[^\p{L}\p{N}_\u00b7\u200c]/gu, '');
   };
 
   /**
@@ -894,7 +1015,7 @@ const startWorker = async (workerId) => {
         reject('No tag for stream provided');
       } else {
         resolve({
-          channelIds: [`timeline:hashtag:${params.tag.toLowerCase()}`],
+          channelIds: [`timeline:hashtag:${normalizeHashtag(params.tag)}`],
           options: { needsFiltering: true },
         });
       }
@@ -905,7 +1026,7 @@ const startWorker = async (workerId) => {
         reject('No tag for stream provided');
       } else {
         resolve({
-          channelIds: [`timeline:hashtag:${params.tag.toLowerCase()}:local`],
+          channelIds: [`timeline:hashtag:${normalizeHashtag(params.tag)}:local`],
           options: { needsFiltering: true },
         });
       }
@@ -1009,7 +1130,8 @@ const startWorker = async (workerId) => {
    * @param {WebSocketSession} session
    */
   const subscribeWebsocketToSystemChannel = ({ socket, request, subscriptions }) => {
-    const systemChannelId = `timeline:access_token:${request.accessTokenId}`;
+    const accessTokenChannelId = `timeline:access_token:${request.accessTokenId}`;
+    const systemChannelId = `timeline:system:${request.accountId}`;
 
     const listener = createSystemMessageListener(request, {
 
@@ -1019,7 +1141,14 @@ const startWorker = async (workerId) => {
 
     });
 
+    subscribe(`${redisPrefix}${accessTokenChannelId}`, listener);
     subscribe(`${redisPrefix}${systemChannelId}`, listener);
+
+    subscriptions[accessTokenChannelId] = {
+      listener,
+      stopHeartbeat: () => {
+      },
+    };
 
     subscriptions[systemChannelId] = {
       listener,

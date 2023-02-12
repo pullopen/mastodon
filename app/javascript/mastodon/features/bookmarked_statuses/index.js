@@ -1,15 +1,16 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from '../../actions/bookmarks';
-import Column from '../ui/components/column';
-import ColumnHeader from '../../components/column_header';
-import { addColumn, removeColumn, moveColumn } from '../../actions/columns';
-import StatusList from '../../components/status_list';
-import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
-import ImmutablePureComponent from 'react-immutable-pure-component';
 import { debounce } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Helmet } from 'react-helmet';
+import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
+import ImmutablePropTypes from 'react-immutable-proptypes';
+import ImmutablePureComponent from 'react-immutable-pure-component';
+import { connect } from 'react-redux';
+import { fetchBookmarkedStatuses, expandBookmarkedStatuses } from 'mastodon/actions/bookmarks';
+import { addColumn, removeColumn, moveColumn } from 'mastodon/actions/columns';
+import ColumnHeader from 'mastodon/components/column_header';
+import StatusList from 'mastodon/components/status_list';
+import Column from 'mastodon/features/ui/components/column';
 
 const messages = defineMessages({
   heading: { id: 'column.bookmarks', defaultMessage: 'Bookmarks' },
@@ -47,24 +48,24 @@ class Bookmarks extends ImmutablePureComponent {
     } else {
       dispatch(addColumn('BOOKMARKS', {}));
     }
-  }
+  };
 
   handleMove = (dir) => {
     const { columnId, dispatch } = this.props;
     dispatch(moveColumn(columnId, dir));
-  }
+  };
 
   handleHeaderClick = () => {
     this.column.scrollTop();
-  }
+  };
 
   setRef = c => {
     this.column = c;
-  }
+  };
 
   handleLoadMore = debounce(() => {
     this.props.dispatch(expandBookmarkedStatuses());
-  }, 300, { leading: true })
+  }, 300, { leading: true });
 
   render () {
     const { intl, statusIds, columnId, multiColumn, hasMore, isLoading } = this.props;
@@ -95,6 +96,11 @@ class Bookmarks extends ImmutablePureComponent {
           emptyMessage={emptyMessage}
           bindToDocument={!multiColumn}
         />
+
+        <Helmet>
+          <title>{intl.formatMessage(messages.heading)}</title>
+          <meta name='robots' content='noindex' />
+        </Helmet>
       </Column>
     );
   }

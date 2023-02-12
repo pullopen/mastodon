@@ -146,7 +146,7 @@ export default class Card extends React.PureComponent {
     } else {
       this.setState({ embedded: true });
     }
-  }
+  };
 
   setRef = c => {
     this.node = c;
@@ -154,17 +154,17 @@ export default class Card extends React.PureComponent {
     if (this.node) {
       this._setDimensions();
     }
-  }
+  };
 
   handleImageLoad = () => {
     this.setState({ previewLoaded: true });
-  }
+  };
 
   handleReveal = e => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({ revealed: true });
-  }
+  };
 
   renderVideo () {
     const { card }  = this.props;
@@ -247,7 +247,7 @@ export default class Card extends React.PureComponent {
             {revealed && (
               <div className='status-card__actions'>
                 <div>
-                  <button onClick={this.handleEmbedClick}><Icon id={iconVariant} /></button>
+                  <button type='button' onClick={this.handleEmbedClick}><Icon id={iconVariant} /></button>
                   {horizontal && <a href={card.get('url')} target='_blank' rel='noopener noreferrer'><Icon id='external-link' /></a>}
                 </div>
               </div>

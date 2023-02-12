@@ -56,14 +56,6 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe 'admins' do
-      it 'returns an array of users who are admin' do
-        user_1 = Fabricate(:user, admin: false)
-        user_2 = Fabricate(:user, admin: true)
-        expect(User.admins).to match_array([user_2])
-      end
-    end
-
     describe 'confirmed' do
       it 'returns an array of users who are confirmed' do
         user_1 = Fabricate(:user, confirmed_at: nil)
@@ -150,10 +142,136 @@ RSpec.describe User, type: :model do
   end
 
   describe '#confirm' do
-    it 'sets email to unconfirmed_email' do
-      user = Fabricate.build(:user, confirmed_at: Time.now.utc, unconfirmed_email: 'new-email@example.com')
-      user.confirm
-      expect(user.email).to eq 'new-email@example.com'
+    let(:new_email) { 'new-email@example.com' }
+
+    subject { user.confirm }
+
+    before do
+      allow(TriggerWebhookWorker).to receive(:perform_async)
+    end
+
+    context 'when the user is already confirmed' do
+      let!(:user) { Fabricate(:user, confirmed_at: Time.now.utc, approved: true, unconfirmed_email: new_email) }
+
+      it 'sets email to unconfirmed_email' do
+        expect { subject }.to change { user.reload.email }.to(new_email)
+      end
+
+      it 'does not trigger the account.approved Web Hook' do
+        subject
+        expect(TriggerWebhookWorker).not_to have_received(:perform_async).with('account.approved', 'Account', user.account_id)
+      end
+    end
+
+    context 'when the user is a new user' do
+      let(:user) { Fabricate(:user, confirmed_at: nil, unconfirmed_email: new_email) }
+
+      context 'when the user is already approved' do
+        around(:example) do |example|
+          registrations_mode = Setting.registrations_mode
+          Setting.registrations_mode = 'approved'
+
+          example.run
+
+          Setting.registrations_mode = registrations_mode
+        end
+
+        before do
+          user.approve!
+        end
+
+        it 'sets email to unconfirmed_email' do
+          expect { subject }.to change { user.reload.email }.to(new_email)
+        end
+
+        it 'triggers the account.approved Web Hook' do
+          user.confirm
+          expect(TriggerWebhookWorker).to have_received(:perform_async).with('account.approved', 'Account', user.account_id).once
+        end
+      end
+
+      context 'when the user does not require explicit approval' do
+        around(:example) do |example|
+          registrations_mode = Setting.registrations_mode
+          Setting.registrations_mode = 'open'
+
+          example.run
+
+          Setting.registrations_mode = registrations_mode
+        end
+
+        it 'sets email to unconfirmed_email' do
+          expect { subject }.to change { user.reload.email }.to(new_email)
+        end
+
+        it 'triggers the account.approved Web Hook' do
+          user.confirm
+          expect(TriggerWebhookWorker).to have_received(:perform_async).with('account.approved', 'Account', user.account_id).once
+        end
+      end
+
+      context 'when the user requires explicit approval but is not approved' do
+        around(:example) do |example|
+          registrations_mode = Setting.registrations_mode
+          Setting.registrations_mode = 'approved'
+
+          example.run
+
+          Setting.registrations_mode = registrations_mode
+        end
+
+        it 'sets email to unconfirmed_email' do
+          expect { subject }.to change { user.reload.email }.to(new_email)
+        end
+
+        it 'does not trigger the account.approved Web Hook' do
+          subject
+          expect(TriggerWebhookWorker).to_not have_received(:perform_async).with('account.approved', 'Account', user.account_id)
+        end
+      end
+    end
+  end
+
+  describe '#approve!' do
+    subject { user.approve! }
+
+    around(:example) do |example|
+      registrations_mode = Setting.registrations_mode
+      Setting.registrations_mode = 'approved'
+
+      example.run
+
+      Setting.registrations_mode = registrations_mode
+    end
+
+    before do
+      allow(TriggerWebhookWorker).to receive(:perform_async)
+    end
+
+    context 'when the user is already confirmed' do
+      let(:user) { Fabricate(:user, confirmed_at: Time.now.utc, approved: false) }
+
+      it 'sets the approved flag' do
+        expect { subject }.to change { user.reload.approved? }.to(true)
+      end
+
+      it 'triggers the account.approved Web Hook' do
+        subject
+        expect(TriggerWebhookWorker).to have_received(:perform_async).with('account.approved', 'Account', user.account_id).once
+      end
+    end
+
+    context 'when the user is not confirmed' do
+      let(:user) { Fabricate(:user, confirmed_at: nil, approved: false) }
+
+      it 'sets the approved flag' do
+        expect { subject }.to change { user.reload.approved? }.to(true)
+      end
+
+      it 'does not trigger the account.approved Web Hook' do
+        subject
+        expect(TriggerWebhookWorker).not_to have_received(:perform_async).with('account.approved', 'Account', user.account_id)
+      end
     end
   end
 
@@ -289,49 +407,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#role' do
-    it 'returns admin for admin' do
-      user = User.new(admin: true)
-      expect(user.role).to eq 'admin'
-    end
-
-    it 'returns moderator for moderator' do
-      user = User.new(moderator: true)
-      expect(user.role).to eq 'moderator'
-    end
-
-    it 'returns user otherwise' do
-      user = User.new
-      expect(user.role).to eq 'user'
-    end
-  end
-
-  describe '#role?' do
-    it 'returns false when invalid role requested' do
-      user = User.new(admin: true)
-      expect(user.role?('disabled')).to be false
-    end
-
-    it 'returns true when exact role match' do
-      user  = User.new
-      mod   = User.new(moderator: true)
-      admin = User.new(admin: true)
-
-      expect(user.role?('user')).to be true
-      expect(mod.role?('moderator')).to be true
-      expect(admin.role?('admin')).to be true
-    end
-
-    it 'returns true when role higher than needed' do
-      mod   = User.new(moderator: true)
-      admin = User.new(admin: true)
-
-      expect(mod.role?('user')).to be true
-      expect(admin.role?('user')).to be true
-      expect(admin.role?('moderator')).to be true
-    end
-  end
-
   describe '#disable!' do
     subject(:user) { Fabricate(:user, disabled: false, current_sign_in_at: current_sign_in_at, last_sign_in_at: nil) }
     let(:current_sign_in_at) { Time.zone.now }
@@ -420,110 +495,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#promote!' do
-    subject(:user) { Fabricate(:user, admin: is_admin, moderator: is_moderator) }
-
-    before do
-      user.promote!
-    end
-
-    context 'when user is an admin' do
-      let(:is_admin) { true }
-
-      context 'when user is a moderator' do
-        let(:is_moderator) { true }
-
-        it 'changes moderator filed false' do
-          expect(user).to be_admin
-          expect(user).not_to be_moderator
-        end
-      end
-
-      context 'when user is not a moderator' do
-        let(:is_moderator) { false }
-
-        it 'does not change status' do
-          expect(user).to be_admin
-          expect(user).not_to be_moderator
-        end
-      end
-    end
-
-    context 'when user is not admin' do
-      let(:is_admin) { false }
-
-      context 'when user is a moderator' do
-        let(:is_moderator) { true }
-
-        it 'changes user into an admin' do
-          expect(user).to be_admin
-          expect(user).not_to be_moderator
-        end
-      end
-
-      context 'when user is not a moderator' do
-        let(:is_moderator) { false }
-
-        it 'changes user into a moderator' do
-          expect(user).not_to be_admin
-          expect(user).to be_moderator
-        end
-      end
-    end
-  end
-
-  describe '#demote!' do
-    subject(:user) { Fabricate(:user, admin: admin, moderator: moderator) }
-
-    before do
-      user.demote!
-    end
-
-    context 'when user is an admin' do
-      let(:admin) { true }
-
-      context 'when user is a moderator' do
-        let(:moderator) { true }
-
-        it 'changes user into a moderator' do
-          expect(user).not_to be_admin
-          expect(user).to be_moderator
-        end
-      end
-
-      context 'when user is not a moderator' do
-        let(:moderator) { false }
-
-        it 'changes user into a moderator' do
-          expect(user).not_to be_admin
-          expect(user).to be_moderator
-        end
-      end
-    end
-
-    context 'when user is not an admin' do
-      let(:admin) { false }
-
-      context 'when user is a moderator' do
-        let(:moderator) { true }
-
-        it 'changes user into a plain user' do
-          expect(user).not_to be_admin
-          expect(user).not_to be_moderator
-        end
-      end
-
-      context 'when user is not a moderator' do
-        let(:moderator) { false }
-
-        it 'does not change any fields' do
-          expect(user).not_to be_admin
-          expect(user).not_to be_moderator
-        end
-      end
-    end
-  end
-
   describe '#active_for_authentication?' do
     subject { user.active_for_authentication? }
     let(:user) { Fabricate(:user, disabled: disabled, confirmed_at: confirmed_at) }
@@ -559,5 +530,9 @@ RSpec.describe User, type: :model do
         it { is_expected.to be true }
       end
     end
+  end
+
+  describe '.those_who_can' do
+    pending
   end
 end
