@@ -19,4 +19,4 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: pullopen/mastodon
-          tags: v3.5.5
+          tags: v4.1.0
