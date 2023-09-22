@@ -1007,3 +1007,11 @@ button.icon-button {
 .icon-button.active {
   color: #F50096 !important;
 }
+
+.button {
+  background: $ui-primary-color;
+}
+
+.button:hover {
+  background: lighten($ui-primary-color, 5%);
+}

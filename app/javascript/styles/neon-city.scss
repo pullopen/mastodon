@@ -320,3 +320,12 @@ body, .landing-page, .public-layout {
 .account__section-headline {
   background-color: rgba(17,17,17,0.9);
 }
+
+.button {
+  background: $ui-highlight-color;
+  color: $white;
+}
+
+.button:hover {
+  background: lighten($ui-highlight-color, 5%);
+}

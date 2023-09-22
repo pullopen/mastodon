@@ -47,3 +47,10 @@ $ui-highlight-color: #5ecc86;
   @return '%23' + unquote($color)
 }
 
+.button {
+  background: $ui-primary-color;
+}
+
+.button:hover {
+  background: lighten($ui-primary-color, 5%);
+}

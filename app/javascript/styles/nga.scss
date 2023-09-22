@@ -64,3 +64,12 @@ $account-background-color: $white !default;
 .icon-button.active {
     color: #df405a !important;
 }
+
+.button {
+  background: $ui-highlight-color;
+  color: $white;
+}
+
+.button:hover {
+  background: lighten($ui-highlight-color, 5%);
+}

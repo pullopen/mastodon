@@ -894,3 +894,12 @@ $ui-highlight-color: $clr-light-blue-500;
 .status__display-name strong {
   color: lighten($ui-primary-color, 15%) !important;
 }
+
+.button {
+  background: $ui-highlight-color;
+  color: $white;
+}
+
+.button:hover {
+  background: lighten($ui-highlight-color, 5%);
+}

@@ -50,3 +50,12 @@ $ui-highlight-color: #dfc657;
 .icon-button.active {
   color: #FF1010 !important;
 }
+
+.button {
+  background: $ui-highlight-color;
+  color: $black;
+}
+
+.button:hover {
+  background: lighten($ui-highlight-color, 5%);
+}

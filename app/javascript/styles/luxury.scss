@@ -36,3 +36,12 @@ $light-text-color: darken($ui-primary-color, 40%) !default;
 .icon-button.active {
     color: #DA9F08 !important;
 }
+
+.button {
+  background: $ui-primary-color;
+  color: $black;
+}
+
+.button:hover {
+  background: lighten($ui-primary-color, 5%);
+}

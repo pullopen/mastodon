@@ -70,3 +70,12 @@ button.icon-button i.fa-retweet {
 .icon-button.active {
   color: #D5A442 !important;
 }
+
+.button {
+  background: $ui-highlight-color;
+  color: $white;
+}
+
+.button:hover {
+  background: lighten($ui-highlight-color, 5%);
+}

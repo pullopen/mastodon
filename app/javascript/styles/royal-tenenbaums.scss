@@ -19,3 +19,11 @@ $ui-primary-color-alt: #56bedd; // darker, for external pages #2
 .status__display-name strong {
   color: lighten($ui-primary-color, 15%) !important;
 }
+
+.button {
+  background: $ui-highlight-color;
+}
+
+.button:hover {
+  background: lighten($ui-highlight-color, 5%);
+}

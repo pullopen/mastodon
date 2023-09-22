@@ -12,3 +12,12 @@ $about-page-text: lighten($ui-base-color, 50%);
 .icon-button.active {
     color: #77EDBC !important;
 }
+
+.button {
+    background: $ui-primary-color;
+    color: $black;
+  }
+  
+  .button:hover {
+    background: darken($ui-primary-color, 5%);
+  }
