@@ -133,10 +133,5 @@ describe Report do
       report = Fabricate.build(:report, account: remote_account, comment: Faker::Lorem.characters(number: 1001))
       expect(report.valid?).to be true
     end
-
-    it 'is valid if comment is longer than 1000 characters and reporter is not local' do
-      report = Fabricate.build(:report, account: remote_account, comment: Faker::Lorem.characters(number: 1001))
-      expect(report.valid?).to be true
-    end
   end
 end
