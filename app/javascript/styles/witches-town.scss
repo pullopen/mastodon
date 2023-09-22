@@ -71,11 +71,15 @@ button.icon-button i.fa-retweet {
   color: #D5A442 !important;
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access, .admin-wrapper .content__heading__tabs a.selected {
   background: $ui-highlight-color;
   color: $white;
 }
 
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover, .admin-wrapper .content__heading__tabs a.selected:hover {
   background: lighten($ui-highlight-color, 5%);
+}
+
+.notification-bar-action {
+  color: $ui-highlight-color;
 }

@@ -104,7 +104,9 @@
 .attachment-list.compact .fa,
 .muted .status__content a,
 .notification__message,
-.status__prepend {
+.status__prepend,
+.hashtag-bar a,
+.notification-bar-action {
 	color: $curl;
 }
 .status__display-name,

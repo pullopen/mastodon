@@ -230,11 +230,11 @@ body {
 }
 
 /* 2.6. Other */
-.button {
+.button, .admin-wrapper .content__heading__tabs a.selected, .dashboard__quick-access {
     background-color: #133e7c;
     color: #8EABAD;
 }
-.button:hover {
+.button:hover, .dashboard__quick-access:hover, .admin-wrapper .content__heading__tabs a.selected:hover {
     background-color: #711c91;
     color: #8EABAD;
 }
@@ -322,9 +322,10 @@ body {
 .reply-indicator__content, .status__content {
     color: #8EABAD;
 }
-.reply-indicator__content a, .status__content a {
+.reply-indicator__content a, .status__content a, .hashtag-bar a, .notification-bar-action {
     color: #BD82B9;
 }
+
 .status__content a.unhandled-link {
     color: #BD82B9;
 }

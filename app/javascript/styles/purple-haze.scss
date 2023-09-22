@@ -85,13 +85,13 @@ html {
   }
   
   /* -------發文按鈕------- */
-  .button {
+  .button, .simple_form button, .dashboard__quick-access, .admin-wrapper .content__heading__tabs a.selected {
     background-color: #69428f;
     color: #ffffff;
   }
   .button:active,
   .button:focus,
-  .button:hover {
+  .button:hover, .simple_form button:hover, .dashboard__quick-access:hover, .admin-wrapper .content__heading__tabs a.selected:hover {
       background-color: #9C77C2;
   }
   .reply-indicator {
@@ -547,14 +547,15 @@ html {
   .reply-indicator__content {
     color: #705480;
   }
-  .status__content a {
+  .status__content a, .notification-bar-action, .hashtag-bar a {
       color: #69428f;
   }
   .reply-indicator__content a {
       color: #FFF;
   }
   .status__display-name strong,
-  .account__display-name strong {
+  .account__display-name strong,
+  .status__display-name .display-name strong {
     color: #705480;
   }
   

@@ -56,6 +56,8 @@ accented buttons
         .button:active,
         .button:focus,
         .button:hover,
+    .admin-wrapper .content__heading__tabs a.selected
+    .dashboard__quick-access,
     .icon-button.overlayed:hover,
     .floating-action-button,
     .simple_form button,
@@ -149,6 +151,8 @@ accented links
     .reply-indicator__content a,
         .reply-indicator__content a.unhandled-link,
         .reply-indicator__cancel .icon-button.inverted:hover,
+    .hashtag-bar a,
+    .notification-bar-action,
     .status__content__read-more-button,
     .icon-button.active,
         .icon-button:focus,

@@ -698,6 +698,10 @@ button.icon-button {
 
 }
 
+.hashtag-bar a, .notification-bar-action {
+  color: $ui-highlight-color;
+}
+
 .detailed-status__display-name {
   color: $ui-base-lighter-color;
 }
@@ -1014,4 +1018,13 @@ button.icon-button {
 
 .button:hover {
   background: lighten($ui-primary-color, 5%);
+}
+
+.admin-wrapper .content__heading__tabs a.selected {
+  color: $white;
+}
+
+.dashboard__quick-access {
+  background: $ui-primary-color;
+  color: $white;
 }

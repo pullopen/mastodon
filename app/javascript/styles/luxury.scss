@@ -37,11 +37,15 @@ $light-text-color: darken($ui-primary-color, 40%) !default;
     color: #DA9F08 !important;
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access {
   background: $ui-primary-color;
-  color: $black;
+  color: $white;
 }
 
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover {
   background: lighten($ui-primary-color, 5%);
+}
+
+.notification-bar-action {
+  color: $ui-highlight-color;
 }

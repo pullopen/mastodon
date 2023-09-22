@@ -81,12 +81,12 @@ body {
     text-shadow: 0 0 8px #fcfcf6;
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access, .admin-wrapper .content__heading__tabs a.selected {
     background-color: #851a24 !important;
     color: #ffffff;
     /*font-size: 11px !important;*/
 }
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover, .admin-wrapper .content__heading__tabs a.selected:hover {
     background-color: #fa051c;
     text-shadow: 0 0 12px #fff;
 }
@@ -175,7 +175,7 @@ body {
   background: #154047;
 }
 
-  .hashtag:hover, .mention:hover {
+  .hashtag:hover, .mention:hover, .hashtag-bar a:hover, .notification-bar-action:hover {
     text-shadow: 0 0 5px #fff;
   }
 .status-link:hover {
@@ -193,3 +193,7 @@ body {
 .activity-stream .entry,.public-layout .public-account-bio, .public-layout .hero-widget__text, .directory__tag > a, .public-layout .public-account-header__bar::before, .grid-4 .landing-page__call-to-action, .contact-widget, .box-widget, .table-of-contents {
     background: transparent !important;
 }
+
+.hashtag-bar a, .notification-bar-action {
+    color: #d9e1e8;
+  }

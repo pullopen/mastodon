@@ -321,11 +321,11 @@ body, .landing-page, .public-layout {
   background-color: rgba(17,17,17,0.9);
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access {
   background: $ui-highlight-color;
   color: $white;
 }
 
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover {
   background: lighten($ui-highlight-color, 5%);
 }

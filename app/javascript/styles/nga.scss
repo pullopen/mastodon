@@ -65,11 +65,11 @@ $account-background-color: $white !default;
     color: #df405a !important;
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access {
   background: $ui-highlight-color;
   color: $white;
 }
 
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover {
   background: lighten($ui-highlight-color, 5%);
 }

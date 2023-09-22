@@ -51,11 +51,15 @@ $ui-highlight-color: #dfc657;
   color: #FF1010 !important;
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access {
   background: $ui-highlight-color;
   color: $black;
 }
 
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover {
   background: lighten($ui-highlight-color, 5%);
+}
+
+.notification-bar-action {
+  color: $ui-highlight-color;
 }

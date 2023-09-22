@@ -47,10 +47,14 @@ $ui-highlight-color: #5ecc86;
   @return '%23' + unquote($color)
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access, .admin-wrapper .content__heading__tabs a.selected {
   background: $ui-primary-color;
 }
 
-.button:hover {
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover, .admin-wrapper .content__heading__tabs a.selected:hover {
   background: lighten($ui-primary-color, 5%);
+}
+
+.notification-bar-action {
+  color: $ui-highlight-color;
 }

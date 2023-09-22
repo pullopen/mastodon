@@ -13,11 +13,15 @@ $about-page-text: lighten($ui-base-color, 50%);
     color: #77EDBC !important;
 }
 
-.button {
+.button, .simple_form button, .dashboard__quick-access {
     background: $ui-primary-color;
-    color: $black;
+    color: $ui-secondary-color;
   }
   
-  .button:hover {
-    background: darken($ui-primary-color, 5%);
-  }
+.button:hover, .simple_form button:hover, .dashboard__quick-access:hover {
+  background: darken($ui-primary-color, 5%);
+}
+
+.notification-bar-action {
+  color: $ui-highlight-color;
+}

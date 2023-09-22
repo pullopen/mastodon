@@ -120,3 +120,7 @@ body.app-body.layout-multiple-columns {
 .poll__option input[type="text"], .compose-form__poll-wrapper .poll__footer select {
     color: #56160c;
 }
+
+.simple_form .input.with_label .label_input > label, .simple_form .input.with_floating_label .label_input > label, .simple_form .input.radio_buttons .radio label {
+    color: rgba(86,22,12);
+}
