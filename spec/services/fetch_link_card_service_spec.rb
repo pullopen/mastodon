@@ -199,14 +199,6 @@ RSpec.describe FetchLinkCardService do
       end
     end
 
-    context 'with a URL of a page in ISO-8859-1 encoding, that charlock_holmes cannot detect' do
-      let(:status) { Fabricate(:status, text: 'Check out http://example.com/low_confidence_latin1') }
-
-      it 'decodes the HTML' do
-        expect(status.preview_card.title).to eq("Tofu á l'orange")
-      end
-    end
-
     context 'with a Japanese path URL' do
       let(:status) { Fabricate(:status, text: 'テストhttp://example.com/日本語') }
 
@@ -240,19 +232,6 @@ RSpec.describe FetchLinkCardService do
 
       it 'does not fetch URLs not isolated from their surroundings' do
         expect(a_request(:get, 'http://example.com/sjis')).to_not have_been_made
-      end
-    end
-
-    context 'with an URL too long for PostgreSQL unique indexes' do
-      let(:url) { "http://example.com/#{'a' * 2674}" }
-      let(:status) { Fabricate(:status, text: url) }
-
-      it 'does not fetch the URL' do
-        expect(a_request(:get, url)).to_not have_been_made
-      end
-
-      it 'does not create a preview card' do
-        expect(status.preview_card).to be_nil
       end
     end
 
