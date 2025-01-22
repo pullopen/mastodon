@@ -1,7 +1,7 @@
 name: PR Needs Rebase
 
-on:
-  schedule:
+#on:
+#  schedule:
 #    - cron: '0 * * * *'
 
 permissions:

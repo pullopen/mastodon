@@ -1,6 +1,6 @@
 name: Crowdin / Download translations
 on:
-  schedule:
+#  schedule:
 #    - cron: '17 4 * * *' # Every day
   workflow_dispatch:
 
