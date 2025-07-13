@@ -70,6 +70,6 @@ $account-background-color: #b2d4cd !default;
   background: lighten($ui-highlight-color, 5%);
 }
 
-.hashtag-bar a, .notification-bar-action {
-  color: $ui-highlight-color;
+.hashtag-bar a, .notification-bar-action, .status__content a.unhandled-link, .status__content a, .trends__item__sparkline path:last-child, .dropdown-button, .compose-form__actions .icon-button:hover, .compose-form__actions .icon-button:focus, .compose-form__actions .icon-button:active, .account__domain-pill, .column-header.active .column-header__icon, .icon-button.active:hover, .icon-button.active:active, .icon-button.active:focus-visible {
+  color: $ui-highlight-color !important;
 }
