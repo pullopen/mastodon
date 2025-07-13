@@ -1,5 +1,5 @@
 @use './mastodon/variables' as *;
-@use 'cybre-base';
+@use 'cybre-base' as *;
 
 $ui-base-color: #181818; // darkest
 $ui-highlight-color: #1ea21e; // vibrant

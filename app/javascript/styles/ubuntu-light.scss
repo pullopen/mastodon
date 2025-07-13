@@ -1,6 +1,6 @@
-@use './mastodon/variables' as *;
+@use './mastodon-light/variables' as *;
 @use 'application';
-@use 'mastodon-light/diff';
+@use './mastodon-light/diff';
 
 // Dependent colors
 $black: #000000;

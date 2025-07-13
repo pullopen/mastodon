@@ -1,5 +1,7 @@
-@use './mastodon/variables' as *;
-@use 'cybre-base';
+@use './mastodon-light/variables' as *;
+@use './mastodon-light/diff';
+@use 'cybre-base' as *;
+
 
 $success-green: #B64579;    // Padua
 
