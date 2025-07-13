@@ -6,7 +6,7 @@ $ui-primary-color-alt: #a0b49c; // darker, for external pages
 
 $about-page-text: lighten($ui-base-color, 50%);
 
-@import 'cybre-base';
+@use 'cybre-base';
 
 @keyframes floating {
   from {

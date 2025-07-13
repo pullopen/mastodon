@@ -17,7 +17,7 @@ $action-button-color: $icon-button-inactive-color;
 
 $about-page-text: $primary-text-color;
 
-@import 'cybre-base';
+@use 'cybre-base';
 
 $gold-star: $ui-highlight-color;
 

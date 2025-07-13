@@ -41,8 +41,8 @@ $account-background-color: #b2d4cd !default;
 }
 
 
-@import 'application';
-@import 'mastodon-light/diff';
+@use 'application';
+@use 'mastodon-light/diff';
 
 .drawer__inner, .column > .scrollable, .column-link, .column-header, .column-header__button, .drawer__header a, .getting-started .column-link, .column-back-button, .account__header__bar, .column-header__back-button {
   background: #D5E5E2 !important;

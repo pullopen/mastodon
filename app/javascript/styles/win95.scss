@@ -90,7 +90,7 @@ $ui-highlight-color: $win95-window-header;
   src: url('../fonts/premillenium/MSSansSerif.ttf') format('truetype');
 }
 
-@import 'cybre-base';
+@use 'cybre-base';
 
 html {
   scrollbar-color: $win95-mid-grey transparent;

@@ -7,7 +7,7 @@ $ui-link-text-color: #65cfed;
 
 $about-page-text: lighten($ui-base-color, 50%);
 
-@import 'neon-base';
+@use 'neon-base';
 
 @keyframes floating {
   from {

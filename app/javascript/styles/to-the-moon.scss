@@ -3,20 +3,20 @@ $highlight-text-color: rgb(242,197,167);
 $ui-base-color: rgba(27,47,73,0.9);
 $secondary-text-color: rgba(242,233,216,0.95);
 
-@import 'application';
+@use 'application';
 
-@import 'mfc/mastodonFlat';
-@import 'to-the-moon/palette';
-@import 'to-the-moon/overrides';
+@use 'mfc/mastodonFlat';
+@use 'to-the-moon/palette';
+@use 'to-the-moon/overrides';
 
-/*@import 'mods/display_breakname';*/
-/*@import 'mods/display_fullname';*/
-/*@import 'mods/display_browserfont';*/
-/* @import 'mods/display_circleavatar'; */
-/*@import 'mods/display_collapsedinteractions';*/
-@import 'mods/display_fadedinteractions';
-/*@import 'mods/display_transparentmedia';*/
-/*@import 'mods/layout_1600px';*/
-@import 'mods/layout_elefriend';
-/*@import 'mods/layout_widercolumns';*/
-/*@import 'mods/layout_mobile_bottombar';*/
+/*@use 'mods/display_breakname';*/
+/*@use 'mods/display_fullname';*/
+/*@use 'mods/display_browserfont';*/
+/* @use 'mods/display_circleavatar'; */
+/*@use 'mods/display_collapsedinteractions';*/
+@use 'mods/display_fadedinteractions';
+/*@use 'mods/display_transparentmedia';*/
+/*@use 'mods/layout_1600px';*/
+@use 'mods/layout_elefriend';
+/*@use 'mods/layout_widercolumns';*/
+/*@use 'mods/layout_mobile_bottombar';*/

@@ -43,8 +43,8 @@ $account-background-color: #dfd5c8 !default;
 $emojis-requiring-inversion: 'chains';
 
 
-@import 'application';
-@import 'mastodon-light/diff';
+@use 'application';
+@use 'mastodon-light/diff';
 
 .drawer__inner, .column > .scrollable, .column-link, .column-header, .column-header__button, .drawer__header a, .getting-started .column-link, .column-back-button, .account__header__bar, .column-header__back-button {
   background: #E2DBCE !important;

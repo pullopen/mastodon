@@ -6,7 +6,7 @@ $ui-secondary-color: #DBD3FF;
 $ui-highlight-color: #A288BD;
 
 // Import defaults
-@import 'application';
+@use 'application';
 
 // Columns width
 .column {

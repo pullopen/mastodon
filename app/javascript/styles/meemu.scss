@@ -3,7 +3,7 @@ $classic-base-color: #94D0FF;
 $classic-primary-color: #8795E8;
 $classic-secondary-color: #FF6AD5;
 $classic-highlight-color: #2b90d9;*/
-@import 'fonts/press-start';
+@use 'fonts/press-start';
 
 $classic-base-color: #1d146e;
 $ui-base-color: $classic-base-color;
@@ -124,4 +124,4 @@ body{
     @include opacity-setting();
     @include corner-rounded();
 }*/
-@import 'application';
+@use 'application';

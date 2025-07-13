@@ -8,7 +8,7 @@ $ui-secondary-color: #e5eee8;
 $ui-highlight-color: #5ecc86;
 
 // Import defaults
-@import 'application';
+@use 'application';
 
 // Based on Witches Town
 // Columns width

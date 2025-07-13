@@ -24,7 +24,7 @@ $lighter-text-color: darken($ui-base-color, 6%) !default;
 $light-text-color: darken($ui-primary-color, 40%) !default;
 
 
-@import 'application';
+@use 'application';
 
 .status__content {
     color: lighten($ui-primary-color, 6%) !important;
