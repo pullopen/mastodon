@@ -1,3 +1,5 @@
+@use './mastodon/variables' as *;
+
 /* https://github.com/mstdn/mastodon/blob/master/app/javascript/styles/sleepingtown.scss */
 // ==========================================================================
 //
@@ -879,6 +881,7 @@ $primary: $clr-teal-500;
 $accent: $clr-pink-a200;
 
 $ui-avatar-border-size: 0%;
+$white: #FFF;
 
 @use 'application';
 .activity-stream .status.light .status__content a.status__content__spoiler-link {

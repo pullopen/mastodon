@@ -1,9 +1,12 @@
+@use './mastodon/variables' as *;
+
 $ui-base-color: #0C023D; // darkest
 $ui-highlight-color: #5c82c2; // vibrant
 $ui-secondary-color: #b5c6d4; // lightest
 $ui-primary-color: #afc5d6; // lighter
 $ui-primary-color-alt: #b0cae7; // darker, for external pages
 $ui-link-text-color: #C6CD9D;
+$white: #FFF;
 
 $about-page-text: lighten($ui-base-color, 50%);
 

@@ -1,3 +1,5 @@
+@use './mastodon/variables' as *;
+
 $success-green: #B64579;    // Padua
 
 $ui-base-color: #f7e8ed; // "darkest"
@@ -16,6 +18,7 @@ $icon-button-inactive-color: lighten(desaturate($ui-base-lighter-color, 20%), 20
 $action-button-color: $icon-button-inactive-color;
 
 $about-page-text: $primary-text-color;
+$white: #FFF;
 
 @use 'cybre-base';
 

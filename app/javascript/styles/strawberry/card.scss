@@ -1,3 +1,5 @@
+@use 'variables' as *;
+
 .status-card {
 	border-color: $cui !important;
 	color: $cui;

@@ -1,5 +1,7 @@
 /* https://github.com/AstroProfundis/mastodon/blob/lynx/app/javascript/styles/new-year.scss */
 
+@use './mastodon/variables' as *;
+
 // Colors
 $ui-base-color: #52221c;
 $ui-base-lighter-color: #eba458;

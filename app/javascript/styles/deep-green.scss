@@ -1,4 +1,5 @@
 @use 'application';
+@use './mastodon/variables' as *;
 ::-webkit-scrollbar {
     display: none;
 }

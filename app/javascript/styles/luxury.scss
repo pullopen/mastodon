@@ -1,5 +1,8 @@
 // Dependent colors
+@use './mastodon/variables' as *;
+
 $black: #000000;
+$white: #FFF;
 
 $classic-base-color: #18121e;
 $classic-primary-color: #eabd7a;
