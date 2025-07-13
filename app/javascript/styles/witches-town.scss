@@ -1,4 +1,5 @@
 @use './mastodon/variables' as *;
+@use 'application';
 
 // Colors
 $ui-base-color: #383144;
@@ -9,7 +10,7 @@ $ui-highlight-color: #A288BD;
 $white:#FFF;
 
 // Import defaults
-@use 'application';
+
 
 // Columns width
 .column {

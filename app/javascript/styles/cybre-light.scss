@@ -1,4 +1,5 @@
 @use './mastodon/variables' as *;
+@use 'cybre-base';
 
 $success-green: #B64579;    // Padua
 
@@ -20,7 +21,7 @@ $action-button-color: $icon-button-inactive-color;
 $about-page-text: $primary-text-color;
 $white: #FFF;
 
-@use 'cybre-base';
+
 
 $gold-star: $ui-highlight-color;
 

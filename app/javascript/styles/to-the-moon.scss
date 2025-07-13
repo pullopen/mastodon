@@ -1,7 +1,3 @@
-$action-button-color: rgb(96, 105, 132);
-$highlight-text-color: rgb(242,197,167);
-$ui-base-color: rgba(27,47,73,0.9);
-$secondary-text-color: rgba(242,233,216,0.95);
 
 @use 'application';
 
@@ -20,3 +16,8 @@ $secondary-text-color: rgba(242,233,216,0.95);
 @use 'mods/layout_elefriend';
 /*@use 'mods/layout_widercolumns';*/
 /*@use 'mods/layout_mobile_bottombar';*/
+
+$action-button-color: rgb(96, 105, 132);
+$highlight-text-color: rgb(242,197,167);
+$ui-base-color: rgba(27,47,73,0.9);
+$secondary-text-color: rgba(242,233,216,0.95);

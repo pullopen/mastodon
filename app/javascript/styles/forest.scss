@@ -1,5 +1,6 @@
 /* https://github.com/AstroProfundis/mastodon/edit/lynx/app/javascript/styles/dark-green.scss */
 @use './mastodon/variables' as *;
+@use 'application';
 
 // Colors
 $ui-base-color: #285043;
@@ -9,7 +10,7 @@ $ui-secondary-color: #e5eee8;
 $ui-highlight-color: #5ecc86;
 
 // Import defaults
-@use 'application';
+
 
 // Based on Witches Town
 // Columns width

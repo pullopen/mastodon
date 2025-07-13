@@ -1,16 +1,9 @@
-$action-button-color: #bd6910;
-$highlight-text-color: #20a88f;
-$ui-highlight-color: $highlight-text-color;
-$primary-text-color: #d0c6b3;
-$ui-base-color: rgba(40,18,14,0.85);
-$darker-text-color: #bdaf94;
-$secondary-text-color: #ffebc0;
-
 @use 'application';
 
 @use 'mfc/mastodonFlat';
 @use 'café/palette';
 @use 'café/overrides';
+
 
 /*@use 'mods/display_breakname';*/
 /*@use 'mods/display_fullname';*/
@@ -23,3 +16,13 @@ $secondary-text-color: #ffebc0;
 @use 'mods/layout_elefriend';
 /*@use 'mods/layout_widercolumns';*/
 /*@use 'mods/layout_mobile_bottombar';*/
+
+$action-button-color: #bd6910;
+$highlight-text-color: #20a88f;
+$ui-highlight-color: $highlight-text-color;
+$primary-text-color: #d0c6b3;
+$ui-base-color: rgba(40,18,14,0.85);
+$darker-text-color: #bdaf94;
+$secondary-text-color: #ffebc0;
+
+

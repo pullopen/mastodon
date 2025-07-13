@@ -1,11 +1,12 @@
 @use './mastodon/variables' as *;
-
+@use 'application';
+@use 'fonts/press-start';
 /*$ui-highlight-color: #4286f4;
 $classic-base-color: #94D0FF;
 $classic-primary-color: #8795E8;
 $classic-secondary-color: #FF6AD5;
 $classic-highlight-color: #2b90d9;*/
-@use 'fonts/press-start';
+
 
 $classic-base-color: #1d146e;
 $ui-base-color: $classic-base-color;
@@ -126,4 +127,3 @@ body{
     @include opacity-setting();
     @include corner-rounded();
 }*/
-@use 'application';

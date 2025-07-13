@@ -1,17 +1,13 @@
-$action-button-color: rgb(96, 105, 132);
-$highlight-text-color: #F2D16D;
-$ui-base-color: rgba(70,94,140);
-$secondary-text-color: rgba(242,238,225,0.95);
-$ui-base-lighter-color: #606984;
 @use 'application';
 
-@use 'mfc/0-palette';
-@use 'mfc/1-foreground';
-@use 'mfc/2-background';
-@use 'mfc/3-highlights';
-@use 'mfc/5-material';
-@use 'black-cat/palette';
-@use 'black-cat/overrides';
+@use 'mfc/0-palette' as *;
+@use 'mfc/1-foreground' as *;
+@use 'mfc/2-background' as *;
+@use 'mfc/3-highlights' as *;
+@use 'mfc/5-material' as *;
+@use 'black-cat/palette' as *;
+@use 'black-cat/overrides' as *;
+
 
 /*@use 'mods/display_breakname';*/
 /*@use 'mods/display_fullname';*/
@@ -24,3 +20,11 @@ $ui-base-lighter-color: #606984;
 @use 'mods/layout_elefriend';
 /*@use 'mods/layout_widercolumns';*/
 /*@use 'mods/layout_mobile_bottombar';*/
+
+$action-button-color: rgb(96, 105, 132);
+$highlight-text-color: #F2D16D;
+$ui-base-color: rgba(70,94,140);
+$secondary-text-color: rgba(242,238,225,0.95);
+$ui-base-lighter-color: #606984;
+
+

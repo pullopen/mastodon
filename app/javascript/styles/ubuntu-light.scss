@@ -1,4 +1,6 @@
 @use './mastodon/variables' as *;
+@use 'application';
+@use 'mastodon-light/diff';
 
 // Dependent colors
 $black: #000000;
@@ -45,8 +47,6 @@ $account-background-color: #dfd5c8 !default;
 $emojis-requiring-inversion: 'chains';
 
 
-@use 'application';
-@use 'mastodon-light/diff';
 
 .drawer__inner, .column > .scrollable, .column-link, .column-header, .column-header__button, .drawer__header a, .getting-started .column-link, .column-back-button, .account__header__bar, .column-header__back-button {
   background: #E2DBCE !important;

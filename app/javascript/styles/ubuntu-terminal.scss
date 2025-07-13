@@ -1,3 +1,5 @@
+@use 'application';
+
 // Dependent colors
 $black: #000000;
 
@@ -24,7 +26,6 @@ $lighter-text-color: darken($ui-base-color, 6%) !default;
 $light-text-color: darken($ui-primary-color, 40%) !default;
 
 
-@use 'application';
 
 .status__content {
     color: lighten($ui-primary-color, 6%) !important;

@@ -1,4 +1,5 @@
 @use './mastodon/variables' as *;
+@use 'neon-base';
 
 $ui-base-color: #0C023D; // darkest
 $ui-highlight-color: #5c82c2; // vibrant
@@ -10,7 +11,7 @@ $white: #FFF;
 
 $about-page-text: lighten($ui-base-color, 50%);
 
-@use 'neon-base';
+
 
 @keyframes floating {
   from {

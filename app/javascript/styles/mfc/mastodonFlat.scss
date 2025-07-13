@@ -1,6 +1,6 @@
-@use '0-palette';
-@use '1-foreground';
-@use '2-background';
-@use '3-highlights';
-@use '5-material';
-@use '6-actions';
+@use '0-palette' as *;
+@use '1-foreground' as *;
+@use '2-background' as *;
+@use '3-highlights' as *;
+@use '5-material' as *;
+@use '6-actions' as *;

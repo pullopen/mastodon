@@ -1,3 +1,5 @@
+@use 'application';
+
 $classic-base-color: #322a4f;
 $ui-base-color: $classic-base-color;
 $ui-base-lighter-color: #885b8c;
@@ -6,4 +8,3 @@ $ui-secondary-color: #ba8d98;
 $ui-highlight-color: #CC7AFF;
 
 
-@use 'application';

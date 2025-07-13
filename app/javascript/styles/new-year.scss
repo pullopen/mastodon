@@ -1,6 +1,7 @@
 /* https://github.com/AstroProfundis/mastodon/blob/lynx/app/javascript/styles/new-year.scss */
 
 @use './mastodon/variables' as *;
+@use 'application';
 
 // Colors
 $ui-base-color: #52221c;
@@ -10,7 +11,7 @@ $ui-secondary-color: #f37343;
 $ui-highlight-color: #dfc657;
 
 // Import defaults
-@use 'application';
+
 
 // Based on Witches Town
 // Columns width

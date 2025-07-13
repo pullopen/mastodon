@@ -1,4 +1,5 @@
 @use './mastodon/variables' as *;
+@use 'cybre-base';
 
 $ui-base-color: #181818; // darkest
 $ui-highlight-color: #1ea21e; // vibrant
@@ -8,7 +9,7 @@ $ui-primary-color-alt: #a0b49c; // darker, for external pages
 
 $about-page-text: lighten($ui-base-color, 50%);
 
-@use 'cybre-base';
+
 
 @keyframes floating {
   from {

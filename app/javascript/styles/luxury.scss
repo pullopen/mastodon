@@ -1,5 +1,6 @@
 // Dependent colors
 @use './mastodon/variables' as *;
+@use 'application';
 
 $black: #000000;
 $white: #FFF;
@@ -26,7 +27,6 @@ $inverted-text-color: $black !default;
 $lighter-text-color: darken($ui-base-color, 6%) !default;
 $light-text-color: darken($ui-primary-color, 40%) !default;
 
-@use 'application';
 
 .status__content {
     color: lighten($ui-primary-color, 6%) !important;

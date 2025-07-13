@@ -1,3 +1,4 @@
+@use 'application';
 // http://pokepalettes.com/#jigglypuff
 $ui-base-color: #8f8571; // darkest #1
 $ui-highlight-color: #cde0df; // vibrant #3
@@ -7,7 +8,7 @@ $ui-primary-color-alt: #cddecd; // darker, for external pages #2
 
 $about-page-text: lighten($ui-base-color, 50%);
 
-@use 'application';
+
 
 .icon-button.active {
     color: #77EDBC !important;
