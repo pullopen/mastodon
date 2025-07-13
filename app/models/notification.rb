@@ -107,7 +107,7 @@ class Notification < ApplicationRecord
   validates :type, inclusion: { in: TYPES }
 
   scope :without_suspended, -> { joins(:from_account).merge(Account.without_suspended) }
-  
+
   def type
     @type ||= (super || LEGACY_TYPE_CLASS_MAP[activity_type]).to_sym
   end
