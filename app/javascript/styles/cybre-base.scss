@@ -1,5 +1,7 @@
 
 @use 'application';
+@use './mastodon/variables' as *;
+@use './mastodon/functions' as *;
 
 /* Wider compose area */
 @media screen and (min-width: 1300px) {
