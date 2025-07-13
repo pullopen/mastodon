@@ -1,6 +1,7 @@
-@use 'mastodon-light/variables';
+@use 'mastodon-light/variables' as *;
 @use 'application';
 @use 'mastodon-light/diff';
+
 .navigation-bar {
     color: #2C2C2C !important;
   }
