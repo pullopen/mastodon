@@ -136,7 +136,6 @@
   "confirmations.delete_list.message": "Ye shair thit ye'r wantin fir tae delete this post fir ever?",
   "confirmations.discard_edit_media.confirm": "Fling awa",
   "confirmations.discard_edit_media.message": "Ye'v chynges tae the media description or preview thit ye'v no saved, fling them awa onie weys?",
-  "confirmations.edit.message": "Editin the noo will owerwrit the message yer componin. Are ye suir yer wantin tae proceed?",
   "confirmations.logout.confirm": "Log oot",
   "confirmations.logout.message": "Ye shair thit ye'r wantin tae log oot?",
   "confirmations.mute.confirm": "Wheesht",

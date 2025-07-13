@@ -24,10 +24,4 @@ RSpec.describe Poll do
 
     it { is_expected.to validate_presence_of(:expires_at) }
   end
-
-  describe 'Validations' do
-    subject { Fabricate.build(:poll) }
-
-    it { is_expected.to validate_presence_of(:expires_at) }
-  end
 end
