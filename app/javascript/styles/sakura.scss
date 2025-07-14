@@ -70,6 +70,39 @@ $account-background-color: #b2d4cd !default;
   background: lighten($ui-highlight-color, 5%);
 }
 
-.hashtag-bar a, .notification-bar-action, .status__content a.unhandled-link, .status__content a, .trends__item__sparkline path:last-child, .dropdown-button, .compose-form__actions .icon-button:hover, .compose-form__actions .icon-button:focus, .compose-form__actions .icon-button:active, .account__domain-pill, .column-header.active .column-header__icon, .icon-button.active:hover, .icon-button.active:active, .icon-button.active:focus-visible {
+.hashtag-bar a, .notification-bar-action, .status__content a.unhandled-link, .status__content a, .trends__item__sparkline path:last-child, .dropdown-button, .compose-form__actions .icon-button, .compose-form__actions .icon-button:hover, .compose-form__actions .icon-button:focus, .compose-form__actions .icon-button:active, .account__domain-pill, .column-header.active .column-header__icon, .icon-button.active:hover, .icon-button.active:active, .icon-button.active:focus-visible, .link-button, a.status-card:hover .status-card__host, a.status-card:hover .status-card__title, a.status-card:hover .status-card__author, a.status-card:hover .status-card__description, a.status-card:focus .status-card__title, a.status-card:focus .status-card__host, a.status-card:focus .status-card__author, a.status-card:focus .status-card__description, a.status-card:active .status-card__title, a.status-card:active .status-card__host, a.status-card:active .status-card__author, a.status-card:active .status-card__description, .status__wrapper-direct .status__prepend, .status__wrapper-direct .notification-ungrouped__header, .notification-ungrouped--direct .status__prepend, .notification-ungrouped--direct .notification-ungrouped__header, .column-back-button, .admin-wrapper .sidebar ul .simple-navigation-active-leaf a, .admin-wrapper .sidebar ul .simple-navigation-active-leaf a {
   color: $ui-highlight-color !important;
+}
+.trends__item__sparkline path:last-child {
+  stroke: $ui-highlight-color !important;
+}
+
+.notification__filter-bar button.active::before, .notification__filter-bar a.active::before, .account__section-headline button.active::before, .account__section-headline a.active::before, .simple_form .btn:active, .simple_form .btn:focus, .simple_form .btn:hover {
+  background-color: $ui-highlight-color !important;
+}
+
+.button.button-secondary:active, .button.button-secondary:focus, .button.button-secondary:hover, .button.button-secondary.button--destructive {
+  color: $ui-highlight-color !important;
+  border-color: $ui-highlight-color !important;
+}
+
+.dropdown-button, .flash-message {
+  border-color: $ui-highlight-color !important;
+}
+
+.filters .filter-subset a.selected {
+  color: $ui-highlight-color !important;
+  border-bottom: $ui-highlight-color !important;
+}
+
+.content-warning {
+  background: rgba(230, 82, 179, 0.05)
+}
+
+.navigation-panel__menu {
+  background-color: #D5E5E2;
+}
+
+.column-header__wrapper.active::before {
+  background: radial-gradient(ellipse,rgba(219, 32, 155, 0.23),rgba(208, 32, 139, 0) 60%)；
 }
