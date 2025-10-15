@@ -25,6 +25,9 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
 
     if @status_parser.edited_at.present? && (@status.edited_at.nil? || @status_parser.edited_at > @status.edited_at)
       handle_explicit_update!
+    elsif @status.edited_at.present? && (@status_parser.edited_at.nil? || @status_parser.edited_at < @status.edited_at)
+      # This is an older update, reject it
+      return @status
     else
       handle_implicit_update!
     end
@@ -71,10 +74,12 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
       update_quote_approval!
       update_counts!
     end
+
+    broadcast_updates! if @status.quote&.state_previously_changed?
   end
 
   def update_interaction_policies!
-    @status.quote_approval_policy = @status_parser.quote_policy
+    @status.update(quote_approval_policy: @status_parser.quote_policy)
   end
 
   def update_media_attachments!
@@ -112,6 +117,8 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
     @status.ordered_media_attachment_ids = @next_media_attachments.map(&:id)
 
     @media_attachments_changed = true if @status.ordered_media_attachment_ids != previous_media_attachments_ids
+
+    @status.media_attachments.reload if @media_attachments_changed
   end
 
   def download_media_files!
@@ -293,15 +300,17 @@ class ActivityPub::ProcessStatusUpdateService < BaseService
   def update_quote!
     quote_uri = @status_parser.quote_uri
 
-    if quote_uri.present?
+    if @status_parser.quote?
       approval_uri = @status_parser.quote_approval_uri
       approval_uri = nil if unsupported_uri_scheme?(approval_uri)
 
       if @status.quote.present?
+        state = @status_parser.deleted_quote? ? :deleted : :pending
+
         # If the quoted post has changed, discard the old object and create a new one
         if @status.quote.quoted_status.present? && ActivityPub::TagManager.instance.uri_for(@status.quote.quoted_status) != quote_uri
           @status.quote.destroy
-          quote = Quote.create(status: @status, approval_uri: approval_uri, legacy: @status_parser.legacy_quote?)
+          quote = Quote.create(status: @status, approval_uri: approval_uri, legacy: @status_parser.legacy_quote?, state: state)
           @quote_changed = true
         else
           quote = @status.quote
