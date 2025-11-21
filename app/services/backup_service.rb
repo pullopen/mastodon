@@ -55,7 +55,6 @@ class BackupService < BaseService
   def build_archive!
     tmp_file = Tempfile.new(%w(archive .zip))
 
-    Zip.write_zip64_support = true
     Zip::File.open(tmp_file, create: true) do |zipfile|
       dump_outbox!(zipfile)
       dump_media_attachments!(zipfile)
