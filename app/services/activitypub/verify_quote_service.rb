@@ -13,6 +13,7 @@ class ActivityPub::VerifyQuoteService < BaseService
     @fetching_error = nil
 
     fetch_quoted_post_if_needed!(fetchable_quoted_uri, prefetched_body: prefetched_quoted_object)
+    return if quote.quoted_account&.local?
     return if fast_track_approval! || quote.approval_uri.blank?
 
     @json = fetch_approval_object(quote.approval_uri, prefetched_body: prefetched_approval)
@@ -72,7 +73,7 @@ class ActivityPub::VerifyQuoteService < BaseService
 
     status ||= ActivityPub::FetchRemoteStatusService.new.call(uri, on_behalf_of: @quote.account.followers.local.first, prefetched_body:, request_id: @request_id, depth: @depth + 1)
 
-    @quote.update(quoted_status: status) if status.present?
+    @quote.update(quoted_status: status) if status.present? && !status.reblog?
   rescue Mastodon::RecursionLimitExceededError, Mastodon::UnexpectedResponseError, *Mastodon::HTTP_CONNECTION_ERRORS => e
     @fetching_error = e
   end
@@ -90,7 +91,7 @@ class ActivityPub::VerifyQuoteService < BaseService
 
     status = ActivityPub::FetchRemoteStatusService.new.call(object['id'], prefetched_body: object, on_behalf_of: @quote.account.followers.local.first, request_id: @request_id, depth: @depth)
 
-    if status.present?
+    if status.present? && !status.reblog?
       @quote.update(quoted_status: status)
       true
     else

@@ -6,7 +6,7 @@ class NotificationMailer < ApplicationMailer
          :routing
 
   before_action :process_params
-  with_options only: %i(mention favourite reblog) do
+  with_options only: %i(mention favourite reblog quote) do
     before_action :set_status
     after_action :thread_by_conversation!
   end
@@ -25,6 +25,14 @@ class NotificationMailer < ApplicationMailer
 #    locale_for_account(@me) do
 #      mail subject: default_i18n_subject(name: @status.account.acct)
 #    end
+  end
+
+  def quote
+    return if @status.blank?
+
+    locale_for_account(@me) do
+      mail subject: default_i18n_subject(name: @status.account.acct)
+    end
   end
 
   def follow
