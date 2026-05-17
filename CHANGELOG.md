@@ -2,6 +2,73 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.5.9] - 2026-04-15
+
+### Security
+
+- Insufficient verification of email addresses ([GHSA-5r37-qpwq-2jhh](https://github.com/mastodon/mastodon/security/advisories/GHSA-5r37-qpwq-2jhh))
+- Updated dependencies
+
+### Added
+
+- Add trademark warning to `mastodon:setup` task (#38548 by @ClearlyClaire)
+
+### Fixed
+
+- Fix definition for `quote` in JSON-LD context (#38686 by @ClearlyClaire)
+- Fix being unable to disable sound for quote update notification (#38537 by @ClearlyClaire)
+- Fix being able to quote someone you blocked (#38608 by @ClearlyClaire)
+
+## [4.5.8] - 2026-03-24
+
+### Security
+
+- Fix insufficient checks on quote authorizations ([GHSA-q4g8-82c5-9h33](https://github.com/mastodon/mastodon/security/advisories/GHSA-q4g8-82c5-9h33))
+- Fix open redirect in legacy path handler ([GHSA-xqw8-4j56-5hj6](https://github.com/mastodon/mastodon/security/advisories/GHSA-xqw8-4j56-5hj6))
+- Updated dependencies
+
+### Added
+
+- Add for searching already-known private GtS posts (#38057 by @ClearlyClaire)
+
+### Changed
+
+- Change media description length limit for remote media attachments from 1500 to 10000 characters (#37921 by @ClearlyClaire)
+- Change HTTP signatures to skip the `Accept` header (#38132 by @ClearlyClaire)
+- Change numeric AP endpoints to redirect to short account URLs when HTML is requested (#38056 by @ClearlyClaire)
+
+### Fixed
+
+- Fix some model definitions in `tootctl maintenance fix-duplicates` (#38214 by @ClearlyClaire)
+- Fix overly strict checks for current username on account migration page (#38183 by @mjankowski)
+- Fix OpenStack Swift Keystone token rate limiting (#38145 by @hugogameiro)
+- Fix poll expiration notification being re-triggered on implicit updates (#38078 by @ClearlyClaire)
+- Fix incorrect translation string in webauthn mailers (#38062 by @mjankowski)
+- Fix “Unblock” and “Unmute” actions being disabled when blocked (#38075 by @ClearlyClaire)
+- Fix username availability check being wrongly applied on race conditions (#37975 by @ClearlyClaire)
+- Fix hover card unintentionally being shown in some cases (#38039 and #38112 by @diondiondion)
+- Fix existing posts not being removed from lists when a list member is unfollowed (#38048 by @ClearlyClaire)
+
+## [4.5.7] - 2026-02-24
+
+### Security
+
+- Reject unconfirmed FASPs (#37926 by @oneiros, [GHSA-qgmm-vr4c-ggjg](https://github.com/mastodon/mastodon/security/advisories/GHSA-qgmm-vr4c-ggjg))
+- Re-use custom socket class for FASP requests (#37925 by @oneiros, [GHSA-46w6-g98f-wxqm](https://github.com/mastodon/mastodon/security/advisories/GHSA-46w6-g98f-wxqm))
+
+### Added
+
+- Add `--suspended-only` option to `tootctl emoji purge` (#37828 and #37861 by @ClearlyClaire and @mjankowski)
+
+### Fixed
+
+- Fix emoji data not being properly cached (#37858 by @ChaosExAnima)
+- Fix delete & redraft of pending posts (#37839 by @ClearlyClaire)
+- Fix processing separate key documents without the ActivityStreams context (#37826 by @ClearlyClaire)
+- Fix custom emojis not being purged on domain suspension (#37808 by @ClearlyClaire)
+- Fix users without special permissions being able to stream disabled timelines (#37791 by @ClearlyClaire)
+- Fix processing of object updates with duplicate hashtags (#37756 by @ClearlyClaire)
+
 ## [4.5.6] - 2026-02-03
 
 ### Security
