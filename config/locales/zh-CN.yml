@@ -2143,36 +2143,36 @@ zh-CN:
     review_link: 查看服务条款
     title: "%{domain} 更新了服务条款"
   themes:
-    black-cat: 黑猫
-    cafe: 咖啡店
-    contrast: Mastodon（高对比度）
-    cybre-light: 赛博浅粉
-    cyberpunk-neon: 赛博朋克
-    deep-green: 墨绿
+    #black-cat: 黑猫
+    #cafe: 咖啡店
+    #contrast: Mastodon（高对比度）
+    #cybre-light: 赛博浅粉
+    #cyberpunk-neon: 赛博朋克
+    #deep-green: 墨绿
     default: Mastodon
-    flora: 芙萝拉
-    forest: 森林
-    geodude: 初春土地
-    luxury: 奢华紫
-    mastodon-light: Mastodon（亮色主题）
-    meemu-org: 海边暮色
-    neoncity: 霓虹都市
-    new-year: 恭贺新年
-    nga: 浅黄
-    pastel-gradient: 春日渐变
-    purple-haze: 紫色薄雾
-    royal-tenenbaums: 岩青
-    sakura: 樱花
-    sleeping-town: 沉睡小镇
-    stardew-valley: 星露谷物语
-    strawberry: 草莓象
-    swan-lake: 男版天鹅湖
-    system: 自动切换（使用系统主题）
-    to-the-moon: 去月球
-    ubuntu-light: 浅褐
-    ubuntu-terminal: 深紫
-    win95: Windows 95
-    witches-town: 巫师小镇
+    #flora: 芙萝拉
+    #forest: 森林
+    #geodude: 初春土地
+    #luxury: 奢华紫
+    #mastodon-light: Mastodon（亮色主题）
+    #meemu-org: 海边暮色
+    #neoncity: 霓虹都市
+    #new-year: 恭贺新年
+    #nga: 浅黄
+    #pastel-gradient: 春日渐变
+    #purple-haze: 紫色薄雾
+    #royal-tenenbaums: 岩青
+    #sakura: 樱花
+    #sleeping-town: 沉睡小镇
+    #stardew-valley: 星露谷物语
+    #strawberry: 草莓象
+    #swan-lake: 男版天鹅湖
+    #system: 自动切换（使用系统主题）
+    #to-the-moon: 去月球
+    #ubuntu-light: 浅褐
+    #ubuntu-terminal: 深紫
+    #win95: Windows 95
+    #witches-town: 巫师小镇
 
   time:
     formats:

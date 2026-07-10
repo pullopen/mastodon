@@ -2193,36 +2193,36 @@ en:
     review_link: Review terms of service
     title: The terms of service of %{domain} are changing
   themes:
-    black-cat: Black Cat
-    cafe: Café
-    contrast: Mastodon (High contrast)
-    cybre-light: Cyber Light Pink
-    cyberpunk-neon: Cyberpunk Neon
-    deep-green: Deep Green
+    #black-cat: Black Cat
+    #cafe: Café
+    #contrast: Mastodon (High contrast)
+    #cybre-light: Cyber Light Pink
+    #cyberpunk-neon: Cyberpunk Neon
+    #deep-green: Deep Green
     default: Mastodon
-    flora: Flora
-    forest: Forest
-    geodude: Spring Earth
-    luxury: Luxury Purple
-    mastodon-light: Mastodon (Light)
-    meemu-org: Seaside Twilight
-    neoncity: Neon City
-    new-year: Chinese New Year
-    nga: Light Yellow
-    pastel-gradient: Pastel Gradient
-    purple-haze: Purple Haze
-    royal-tenenbaums: Rock Cyan
-    sakura: Sakura
-    sleeping-town: Sleeping Town
-    stardew-valley: Stardew Valley
-    strawberry: Strawberry
-    swan-lake: Swan Lake
-    system: Automatic (use system theme)
-    to-the-moon: To the Moon
-    ubuntu-light: Light Hazel
-    ubuntu-terminal: Dark Purple
-    win95: Windows 95
-    witches-town: Witches Town
+    #flora: Flora
+    #forest: Forest
+    #geodude: Spring Earth
+    #luxury: Luxury Purple
+    #mastodon-light: Mastodon (Light)
+    #meemu-org: Seaside Twilight
+    #neoncity: Neon City
+    #new-year: Chinese New Year
+    #nga: Light Yellow
+    #pastel-gradient: Pastel Gradient
+    #purple-haze: Purple Haze
+    #royal-tenenbaums: Rock Cyan
+    #sakura: Sakura
+    #sleeping-town: Sleeping Town
+    #stardew-valley: Stardew Valley
+    #strawberry: Strawberry
+    #swan-lake: Swan Lake
+    #system: Automatic (use system theme)
+    #to-the-moon: To the Moon
+    #ubuntu-light: Light Hazel
+    #ubuntu-terminal: Dark Purple
+    #win95: Windows 95
+    #witches-town: Witches Town
 
   time:
     formats:
