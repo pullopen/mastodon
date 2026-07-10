@@ -19,7 +19,6 @@
   "account.block_domain": "{domain} доменін бұғаттау",
   "account.block_short": "Бұғаттау",
   "account.blocked": "Бұғатталған",
-  "account.blocking": "Бұғаттау",
   "account.cancel_follow_request": "Withdraw follow request",
   "account.direct": "@{name} жеке айту",
   "account.disable_notifications": "@{name} постары туралы ескертпеу",

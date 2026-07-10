@@ -79,21 +79,6 @@ class StatusCacheHydrator
 
     payload[:card][:missing_attribution] = status.preview_card.unverified_author_account_id == account.id if payload[:card]
 
-    if payload[:poll]
-      if fresh
-        # If the status is brand new, we don't need to look up votes in database
-        payload[:poll][:voted] = status.account_id == account_id
-        payload[:poll][:own_votes] = []
-      elsif status.account_id == account_id
-        payload[:poll][:voted] = true
-        payload[:poll][:own_votes] = []
-      else
-        own_votes = PollVote.where(poll_id: status.poll_id, account_id: account_id).pluck(:choice)
-        payload[:poll][:voted] = !own_votes.empty?
-        payload[:poll][:own_votes] = own_votes
-      end
-    end
-
     # Nested statuses are more likely to have a stale cache
     fill_status_stats(payload, status) if nested
 
