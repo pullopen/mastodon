@@ -8,6 +8,7 @@ import {
   setComposeQuotePolicy,
   pasteLinkCompose,
   cancelPasteLinkCompose,
+  setDragUploadEnabled,
 } from '@/mastodon/actions/compose_typed';
 import { timelineDelete } from 'mastodon/actions/timelines_typed';
 
@@ -75,6 +76,7 @@ const initialState = ImmutableMap({
   is_submitting: false,
   is_changing_upload: false,
   is_uploading: false,
+  isDragDisabled: false,
   should_redirect_to_compose_page: false,
   progress: 0,
   isUploadingThumbnail: false,
@@ -132,6 +134,7 @@ function clearAll(state) {
     map.set('idempotencyKey', uuid());
     map.set('quoted_status_id', null);
     map.set('quote_policy', state.get('default_quote_policy'));
+    map.set('isDragDisabled', false);
   });
 }
 
@@ -152,6 +155,10 @@ function appendMedia(state, media, file) {
 
     if (prevSize === 0 && (state.get('default_sensitive') || state.get('spoiler'))) {
       map.set('sensitive', true);
+
+      if (state.get('default_sensitive')) {
+        map.set('spoiler', true);
+      }
     }
   });
 }
@@ -359,11 +366,15 @@ export const composeReducer = (state = initialState, action) => {
     return action.meta.requestId === state.get('fetching_link') ? state.set('fetching_link', null) : state;
   } else if (cancelPasteLinkCompose.match(action)) {
     return state.set('fetching_link', null);
+  } else if (setDragUploadEnabled.match(action)) {
+    return state.set('isDragDisabled', !action.payload);
   }
 
   switch(action.type) {
   case STORE_HYDRATE:
-    return hydrate(state, action.state.get('compose'));
+    if (action.state.get('compose'))
+      return hydrate(state, action.state.get('compose'));
+    return state;
   case COMPOSE_MOUNT:
     return state
       .set('mounted', state.get('mounted') + 1)
@@ -393,7 +404,7 @@ export const composeReducer = (state = initialState, action) => {
       map.set('spoiler', !state.get('spoiler'));
       map.set('idempotencyKey', uuid());
 
-      if (state.get('media_attachments').size >= 1 && !state.get('default_sensitive')) {
+      if (state.get('media_attachments').size >= 1) {
         map.set('sensitive', !state.get('spoiler'));
       }
     });
@@ -538,7 +549,7 @@ export const composeReducer = (state = initialState, action) => {
         map.set('spoiler', true);
         map.set('spoiler_text', action.status.get('spoiler_text'));
       } else {
-        map.set('spoiler', false);
+        map.set('spoiler', action.status.get('sensitive') && action.status.get('media_attachments').size > 0);
         map.set('spoiler_text', '');
       }
 
@@ -575,7 +586,7 @@ export const composeReducer = (state = initialState, action) => {
         map.set('spoiler', true);
         map.set('spoiler_text', action.spoiler_text);
       } else {
-        map.set('spoiler', false);
+        map.set('spoiler', action.status.get('sensitive') && action.status.get('media_attachments').size > 0);
         map.set('spoiler_text', '');
       }
 
@@ -603,7 +614,10 @@ export const composeReducer = (state = initialState, action) => {
   case COMPOSE_LANGUAGE_CHANGE:
     return state.set('language', action.language);
   case COMPOSE_FOCUS:
-    return state.set('focusDate', new Date()).update('text', text => text.length > 0 ? text : action.defaultText);
+    return state
+      .set('focusDate', new Date())
+      .update('text', text => text.length > 0 ? text : action.defaultText)
+      .update('caretPosition', position => action.caretStart ? 0 : position);
   case COMPOSE_CHANGE_MEDIA_ORDER:
     return state.update('media_attachments', list => {
       const indexA = list.findIndex(x => x.get('id') === action.a);

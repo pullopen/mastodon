@@ -10,8 +10,9 @@ import Textarea from 'react-textarea-autosize';
 
 import AutosuggestAccountContainer from '../features/compose/containers/autosuggest_account_container';
 
-import AutosuggestEmoji from './autosuggest_emoji';
+import { AutosuggestEmoji } from './autosuggest_emoji';
 import { AutosuggestHashtag } from './autosuggest_hashtag';
+import { LocalCustomEmojiProvider } from './emoji/context';
 
 const textAtCursorMatchesToken = (str, caretPosition) => {
   let word;
@@ -50,6 +51,7 @@ const AutosuggestTextarea = forwardRef(({
   onKeyUp,
   onKeyDown,
   onPaste,
+  onDrop,
   onFocus,
   autoFocus = true,
   lang,
@@ -153,6 +155,12 @@ const AutosuggestTextarea = forwardRef(({
     onPaste(e);
   }, [onPaste]);
 
+  const handleDrop = useCallback((e) => {
+    if (onDrop) {
+      onDrop(e);
+    }
+  }, [onDrop]);
+
   // Show the suggestions again whenever they change and the textarea is focused
   useEffect(() => {
     if (suggestions.size > 0 && textareaRef.current === document.activeElement) {
@@ -204,21 +212,24 @@ const AutosuggestTextarea = forwardRef(({
         onFocus={handleFocus}
         onBlur={handleBlur}
         onPaste={handlePaste}
+        onDrop={handleDrop}
         dir='auto'
         aria-autocomplete='list'
         aria-label={placeholder}
         lang={lang}
       />
 
-      <Overlay show={!(suggestionsHidden || suggestions.isEmpty())} offset={[0, 0]} placement='bottom' target={textareaRef} popperConfig={{ strategy: 'fixed' }}>
-        {({ props }) => (
-          <div {...props}>
-            <div className='autosuggest-textarea__suggestions' style={{ width: textareaRef.current?.clientWidth }}>
-              {suggestions.map(renderSuggestion)}
+      <LocalCustomEmojiProvider>
+        <Overlay show={!(suggestionsHidden || suggestions.isEmpty())} offset={[0, 0]} placement='bottom' target={textareaRef} popperConfig={{ strategy: 'fixed' }}>
+          {({ props }) => (
+            <div {...props}>
+              <div className='autosuggest-textarea__suggestions' style={{ width: textareaRef.current?.clientWidth }}>
+                {suggestions.map(renderSuggestion)}
+              </div>
             </div>
-          </div>
-        )}
-      </Overlay>
+          )}
+        </Overlay>
+      </LocalCustomEmojiProvider>
     </div>
   );
 });
@@ -235,6 +246,7 @@ AutosuggestTextarea.propTypes = {
   onKeyUp: PropTypes.func,
   onKeyDown: PropTypes.func,
   onPaste: PropTypes.func.isRequired,
+  onDrop: PropTypes.func,
   onFocus:PropTypes.func,
   autoFocus: PropTypes.bool,
   lang: PropTypes.string,
