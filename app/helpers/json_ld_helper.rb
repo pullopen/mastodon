@@ -17,6 +17,22 @@ module JsonLdHelper
     value.is_a?(Array) ? value.first : value
   end
 
+  # Some attributes we read can be either `xsd:string` or `rdf:langString`
+  # and will lead to different compacted forms depending on which they are.
+  # Furthermore, we don't unconditionally compact to our context, so we
+  # may also find non-compacted forms.
+  # This is the case of `summary`, `name` and `content` as defined in ActivityStreams.
+  def first_lang_string(json, name)
+    if json[name]
+      value = first_of_value(json[name])
+      return value if value.is_a?(String)
+
+      value['@value'] if value.is_a?(Hash)
+    elsif json["#{name}Map"]
+      json["#{name}Map"].values.first
+    end
+  end
+
   def uri_from_bearcap(str)
     if str&.start_with?('bear:')
       Addressable::URI.parse(str).query_values['u']
@@ -106,10 +122,34 @@ module JsonLdHelper
     graph.dump(:normalize)
   end
 
-  def compact(json)
-    compacted = JSON::LD::API.compact(json.without('signature'), full_context, documentLoader: method(:load_jsonld_context))
-    compacted['signature'] = json['signature']
-    compacted
+  def compact(json, context = full_context)
+    JSON::LD::API.compact(json.without('signature'), context, documentLoader: method(:load_jsonld_context)).tap do |compacted|
+      compacted['signature'] = json['signature']
+    end
+  end
+
+  # Checks for unsupported JSON-LD features or too many nodes
+  def check_jsonld_limits!(json, budget = 1_000)
+    budget -= 1
+
+    if json.is_a?(Hash)
+      json.each do |key, value|
+        raise Mastodon::InvalidJsonLdError, 'contains unsupported JSON-LD features' if UNSUPPORTED_JSONLD_KEYWORDS.include?(key)
+        raise Mastodon::InvalidJsonLdError, 'has too many nodes' if budget < 1
+
+        budget = check_jsonld_limits!(value, budget)
+      end
+    elsif json.is_a?(Array)
+      json.each do |value|
+        raise Mastodon::InvalidJsonLdError, 'has too many nodes' if budget < 1
+
+        budget = check_jsonld_limits!(value, budget)
+      end
+    end
+
+    raise Mastodon::InvalidJsonLdError, 'has too many nodes' if budget < 0 # rubocop:disable Style/NumericPredicate
+
+    budget
   end
 
   def unsupported_jsonld_features?(json)
@@ -217,7 +257,7 @@ module JsonLdHelper
   # If an error is raised, it contains the response and can be captured for handling like
   #
   #     begin
-  #       fetch_resource_without_id_validation(uri, nil, true)
+  #       fetch_resource_without_id_validation(uri, raise_on_error: :all)
   #     rescue Mastodon::UnexpectedResponseError => e
   #       e.response
   #     end

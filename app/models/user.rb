@@ -102,15 +102,15 @@ class User < ApplicationRecord
   validates :date_of_birth, presence: true, date_of_birth: true, on: :create, if: -> { Setting.min_age.present? && !bypass_registration_checks? }
   validate :validate_role_elevation
 
-  scope :account_not_suspended, -> { joins(:account).merge(Account.without_suspended) }
+  scope :account_available, -> { joins(:account).merge(Account.without_suspended.without_requested_deletion) }
   scope :recent, -> { order(id: :desc) }
   scope :pending, -> { where(approved: false) }
   scope :approved, -> { where(approved: true) }
   scope :enabled, -> { where(disabled: false) }
   scope :disabled, -> { where(disabled: true) }
-  scope :active, -> { confirmed.signed_in_recently.account_not_suspended }
+  scope :active, -> { confirmed.signed_in_recently.account_available }
   scope :matches_email, ->(value) { where(arel_table[:email].matches("#{value}%")) }
-  scope :matches_ip, ->(value) { left_joins(:ips).merge(IpBlock.contained_by(value)).group(users: [:id]) }
+  scope :matches_ip, ->(value) { left_joins(:ips).merge(UserIp.contained_by(value)).group(users: [:id]) }
 
   before_validation :sanitize_role
   before_create :set_approved
@@ -317,13 +317,6 @@ class User < ApplicationRecord
     super
   end
 
-  def external_or_valid_password?(compare_password)
-    # If encrypted_password is blank, we got the user from LDAP or PAM,
-    # so credentials are already valid
-
-    encrypted_password.blank? || valid_password?(compare_password)
-  end
-
   def send_reset_password_instructions
     return false if encrypted_password.blank?
 
@@ -525,7 +518,7 @@ class User < ApplicationRecord
   end
 
   def invite_text_required?
-    Setting.require_invite_text && !open_registrations? && !invited? && !external? && !bypass_registration_checks?
+    Setting.require_invite_text && !open_registrations? && !invite&.bypass_approval? && !external? && !bypass_registration_checks?
   end
 
   def trigger_webhooks
